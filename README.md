@@ -6,8 +6,21 @@ a quick and easy formatting plugin.
 
 ```lua
 local ft = require("thistle.ft")
-ft("*"):use("prettier")
+-- use formatters for your favourite languages
 ft("lua"):use("stylua")
+ft("nix"):use("nixfmt")
+
+-- add a formatter for multiple languages
+ft({ "html", "astro", "vue" }):use("prettier")
+
+-- add a default formatter for all languages
+ft("*"):use({
+  cmd = "treefmt",
+  args = function(params)
+    local filename = vim.api.nvim_buf_get_name(params.buf)
+    return { "--allow-missing-formatter", "--stdin", filename }
+  end,
+})
 ```
 
 inspired by:
