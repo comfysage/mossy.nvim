@@ -84,7 +84,7 @@ local function box(ft)
 	---@param cfg thistle.fmt.config|string
 	local function parsecfg(cfg)
 		if type(cfg) == "string" then
-			local formatter = require("thistle.formatters").get(cfg)
+			local formatter = require("thistle.builtins").get(cfg)
 			if formatter then
 				return formatter
 			end
