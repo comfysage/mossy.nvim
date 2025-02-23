@@ -7,10 +7,10 @@
 ---@field format_on_save boolean
 
 ---@class thistle.fmt.config
----@field cmd string
----@field args string[]
+---@field cmd? string
+---@field args? string[]
 ---@field fn? fun(params: thistle.fmt.fn.params)
----@field stdin boolean
+---@field stdin? boolean
 ---@field env? { [string]: string }
 
 ---@class thistle.fmt.fn.params
