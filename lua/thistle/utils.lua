@@ -81,8 +81,13 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
 end
 
 ---@param config thistle.fmt.config
-function utils.get_cmd(config)
-	return vim.list_extend({ config.cmd }, config.args)
+---@param params thistle.fmt.params
+function utils.get_cmd(config, params)
+	local args = config.args or {}
+	if type(args) == "function" then
+		args = args(params)
+	end
+	return vim.list_extend({ config.cmd }, args)
 end
 
 ---@param cmd string[]

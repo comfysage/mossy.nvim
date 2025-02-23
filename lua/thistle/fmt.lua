@@ -38,7 +38,8 @@ local function do_pure_fmt(buf, range, formatter)
 	if formatter.fn then
 		new_lines = formatter.fn({ buf = buf, range = range })
 	else
-		local result = utils.spawn(utils.get_cmd(formatter), nil, formatter, prev_lines_str)
+		local result =
+			utils.spawn(utils.get_cmd(formatter, { buf = buf, range = range }), nil, formatter, prev_lines_str)
 		if type(result) == "table" then
 			-- indicates error
 			errno = result
@@ -90,7 +91,7 @@ end
 local function do_impure_fmt(buf, formatter)
 	local errno = nil
 
-	vim.system(utils.get_cmd(formatter), {
+	vim.system(utils.get_cmd(formatter, { buf = buf }), {
 		text = true,
 		env = formatter.env or {},
 	}, function(result)

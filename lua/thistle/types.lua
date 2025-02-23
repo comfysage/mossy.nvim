@@ -8,11 +8,11 @@
 
 ---@class thistle.fmt.config
 ---@field cmd? string
----@field args? string[]
----@field fn? fun(params: thistle.fmt.fn.params)
+---@field args? string[]|fun(params: thistle.fmt.params): string[]
+---@field fn? fun(params: thistle.fmt.params)
 ---@field stdin? boolean
 ---@field env? { [string]: string }
 
----@class thistle.fmt.fn.params
+---@class thistle.fmt.params
 ---@field buf integer
 ---@field range? thistle.utils.range
