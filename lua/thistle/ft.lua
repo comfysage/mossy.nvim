@@ -96,6 +96,9 @@ local function box(ft)
 		if not cfg.args then
 			cfg.args = {}
 		end
+		if cfg.stdin == nil then
+			cfg.stdin = true
+		end
 		---@cast cfg thistle.fmt.config
 		return cfg
 	end
