@@ -1,4 +1,7 @@
+---@type mossy.source.formatting
 return {
+	name = "treefmt",
+	method = "formatting",
 	cmd = "treefmt",
 	args = function(params)
 		local filename = vim.api.nvim_buf_get_name(params.buf)

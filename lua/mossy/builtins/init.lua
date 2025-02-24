@@ -1,8 +1,10 @@
 local log = require("mossy.log")
 
----@type { [string]: mossy.fmt.config }
-local formatters = {
+---@type { [string]: mossy.source }
+local builtins = {
 	lsp = {
+		name = "lsp",
+		method = "formatting",
 		fn = function(params)
 			vim.lsp.buf.format({ async = true, bufnr = params.buf, range = params.range })
 		end,
@@ -11,14 +13,18 @@ local formatters = {
 
 return {
 	get = function(name)
-		local formatter = formatters[name]
-		if formatter then
-			return formatter
+		local builtin = builtins[name]
+		if builtin then
+			return builtin
 		end
-		local ok, result = pcall(require, string.format("mossy.builtins.%s", name))
-		if not ok then
-			return
-		end
-		return result
+		vim.iter({ "diagnostics", "formatting" }):find(function(method)
+			local ok, result = pcall(require, string.format("mossy.builtins.%s.%s", method, name))
+			if not ok then
+				return
+			end
+			builtin = result
+			return true
+		end)
+		return builtin
 	end,
 }
