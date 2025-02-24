@@ -2,6 +2,7 @@ local M = {}
 
 ---@type mossy.config
 M.default = {
+	enable = true,
 	globalopts = {
 		format_on_save = true,
 	},

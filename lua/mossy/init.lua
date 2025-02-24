@@ -31,10 +31,28 @@ function M.init(buf)
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = vim.api.nvim_create_augroup(("mossy.format[%d]"):format(buf), { clear = true }),
 		callback = function(ev)
-			require("mossy").format(ev.buf)
+			if config.get().enable then
+				require("mossy").format(ev.buf)
+			end
 		end,
 		buffer = buf,
 	})
+end
+
+function M.disable()
+	config.set(config.override({ enable = false }))
+end
+
+function M.enable()
+	config.set(config.override({ enable = true }))
+end
+
+function M.toggle()
+	if config.get().enable then
+		M.disable()
+	else
+		M.enable()
+	end
 end
 
 ---@param buf? integer

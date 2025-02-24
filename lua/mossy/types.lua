@@ -1,4 +1,5 @@
 ---@class mossy.config
+---@field enable? boolean
 ---@field globalopts? mossy.globalopts
 ---@field formatters? { [string]: mossy.fmt.config }
 ---@field log_level? integer
