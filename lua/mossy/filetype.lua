@@ -20,11 +20,10 @@ function ft.get(filetype, method)
 	end
 
 	return vim.iter(pairs(config.get().sources[method]))
-		:filter(function(_, cfg)
+		:map(function(_, cfg)
 			if not cfg.filetypes or vim.tbl_contains(cfg.filetypes, filetype) then
-				return true
+				return cfg
 			end
-			return false
 		end)
 		:totable()
 end
