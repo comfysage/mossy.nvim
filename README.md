@@ -1,7 +1,5 @@
 # mossy.nvim
 
- ## :sparkles: features
- 
 a simple and opinionated development plugin.
 
 ```lua
@@ -24,7 +22,18 @@ ft("*"):use({
 ```
 
 inspired by:
+- [none-ls](https://github.com/nvimtools/none-ls.nvim) - Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
 - [guard.nvim](https://github.com/nvimdev/guard.nvim) - Lightweight, fast and async formatting and linting plugin for Neovim
+
+## :sparkles: features
+
+- [x] `ft()`: easy declaration of formatters for each filetype
+- [x] `ft():use()`: ordered formatter declaration
+- [x] `formatter.args`: dynamic arguments for formatters
+- [x] `formatter.cond`: conditional formatters: use a predicate to enable formatter
+- [ ] lsp fallback: use an lsp server to format the file if others failed
+- [ ] *linters*: support for lsp linters
+- [ ] *nvim events*: use autocmds to extend mossy's behaviour
 
 ## :lock: requirements
 
