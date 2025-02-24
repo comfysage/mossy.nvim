@@ -25,8 +25,8 @@ function tbl:get()
 end
 
 ---@class mossy.proto.sources
----@field set fun()
-function tbl:set()
+---@field push fun(): mossy.proto.sources
+function tbl:push()
 	config.set(config.override({
 		sources = vim.tbl_extend("force", config.get().sources, self:get()),
 	}))
@@ -43,7 +43,7 @@ function tbl:add(cfg)
 	self:get()[cfg.method][cfg.name] = cfg
 	log.debug(string.format("(%s) declared for %s", cfg.name, cfg.method))
 	self.lastsource = { cfg.method, cfg.name }
-	return self
+	return self:push()
 end
 
 ---@class mossy.proto.sources
@@ -54,7 +54,7 @@ function tbl:with(cfg)
 	end
 	local source = vim.tbl_get(self:get(), unpack(self.lastsource))
 	self:get()[source.method][source.name] = vim.tbl_deep_extend("force", source, cfg)
-	return self
+	return self:push()
 end
 
 ---@class mossy.proto.sources
@@ -63,7 +63,7 @@ function tbl:setup(sources)
 	vim.iter(ipairs(sources)):each(function(_, cfg)
 		self:add(cfg)
 	end)
-	return self:set()
+	return self
 end
 
 return setmetatable({}, tbl)
