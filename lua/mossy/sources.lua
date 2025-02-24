@@ -42,6 +42,7 @@ function tbl:add(cfg)
 	end
 	self:get()[cfg.method][cfg.name] = cfg
 	log.debug(string.format("(%s) declared for %s", cfg.name, cfg.method))
+	self.lastsource = { cfg.method, cfg.name }
 	return self
 end
 
@@ -52,7 +53,7 @@ function tbl:with(cfg)
 		return log.error("no source found to override")
 	end
 	local source = vim.tbl_get(self:get(), unpack(self.lastsource))
-	source = vim.tbl_deep_extend("force", source, cfg)
+	self:get()[source.method][source.name] = vim.tbl_deep_extend("force", source, cfg)
 	return self
 end
 
