@@ -160,7 +160,7 @@ function M.fmt(buf)
 
 	coroutine.resume(coroutine.create(function()
 		vim.iter(ipairs(cfg.formatters)):find(function(_, formatter)
-			return do_fmt(buf, range, formatter)
+			return do_fmt(buf, range, formatter) == true
 		end)
 	end))
 end
