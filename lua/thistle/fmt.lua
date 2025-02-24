@@ -121,6 +121,10 @@ local function do_fmt(buf, range, formatter)
 		return log.debug("cannot format range with this formatter: " .. formatter.cmd)
 	end
 
+	if formatter.cond and not formatter.cond({ buf = buf, range = range }) then
+		return log.debug("condition returned false for formatter: " .. formatter.cmd)
+	end
+
 	local result = nil
 	if formatter.stdin then
 		result = do_pure_fmt(buf, range, formatter)

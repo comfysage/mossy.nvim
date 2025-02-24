@@ -12,6 +12,7 @@
 ---@field fn? fun(params: thistle.fmt.params)
 ---@field stdin? boolean
 ---@field env? { [string]: string }
+---@field cond? fun(params: thistle.fmt.params)
 
 ---@class thistle.fmt.params
 ---@field buf integer
