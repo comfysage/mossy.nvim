@@ -156,7 +156,11 @@ function M.format(buf, props)
 	end
 	local formatters = ft.get(filetype, "formatting")
 	if #formatters == 0 then
-		return log.warn("no formatters configured")
+		local msg = "no formatters configured"
+		if props.autoformat then
+			return log.debug(msg)
+		end
+		return log.warn(msg)
 	end
 
 	local range = nil
