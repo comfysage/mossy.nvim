@@ -4,6 +4,7 @@ local h = require("mossy.helpers")
 return {
 	name = "stylua",
 	method = "formatting",
+	filetypes = { "lua", "luau" },
 	cmd = "stylua",
 	args = function(params)
 		local filename = vim.api.nvim_buf_get_name(params.buf)
