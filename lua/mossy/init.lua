@@ -22,7 +22,7 @@ function M.init(buf)
 		group = vim.api.nvim_create_augroup(("mossy.format[%d]"):format(buf), { clear = true }),
 		callback = function(ev)
 			if config.get().enable then
-				require("mossy").format(ev.buf, true)
+				require("mossy").format(ev.buf, { autoformat = true })
 			end
 		end,
 		buffer = buf,
