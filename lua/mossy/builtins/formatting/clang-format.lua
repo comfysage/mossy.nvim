@@ -1,6 +1,9 @@
 local h = require("mossy.helpers")
 
+---@type mossy.source.formatting
 return {
+	name = "clang-format",
+	method = "formatting",
 	cmd = "clang-format",
 	args = function(params)
 		local filename = vim.api.nvim_buf_get_name(params.buf)

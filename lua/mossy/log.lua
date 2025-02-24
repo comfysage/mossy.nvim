@@ -34,7 +34,9 @@ function log.notify(msg, level)
 	if level < config.get().log_level then
 		return
 	end
-	vim.notify_once(msg, level)
+	vim.schedule(function()
+		vim.notify(msg, level)
+	end)
 	return level
 end
 
@@ -70,6 +72,7 @@ function log.get(level, limit)
 		if item[1] < level then
 			return false
 		end
+		return true
 	end)
 	if limit then
 		it = it:take(limit)

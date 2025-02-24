@@ -1,5 +1,4 @@
 local config = require("mossy.config")
-local ft = require("mossy.ft")
 
 local M = {}
 
@@ -19,20 +18,11 @@ end
 function M.init(buf)
 	buf = buf or 0
 
-	local filetype = vim.filetype.match({ buf = buf })
-	if not filetype then
-		return
-	end
-	local cfg = ft(filetype):fold()[filetype]
-	if not cfg or not cfg.format_on_save then
-		return
-	end
-
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = vim.api.nvim_create_augroup(("mossy.format[%d]"):format(buf), { clear = true }),
 		callback = function(ev)
 			if config.get().enable then
-				require("mossy").format(ev.buf)
+				require("mossy").format(ev.buf, true)
 			end
 		end,
 		buffer = buf,
@@ -55,10 +45,14 @@ function M.toggle()
 	end
 end
 
+---@class mossy.format.props
+---@field autoformat? true
+
 ---@param buf? integer
-function M.format(buf)
+---@param props? mossy.format.props
+function M.format(buf, props)
 	buf = buf or 0
-	return require("mossy.fmt").fmt(buf)
+	return require("mossy.format").format(buf, props or {})
 end
 
 return M

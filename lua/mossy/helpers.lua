@@ -2,7 +2,7 @@ local h = {}
 
 ---@params string[]
 function h.make_args_range(args, start_arg, end_arg, opts)
-	---@param params mossy.fmt.params
+	---@param params mossy.formatting.params
 	return function(params)
 		if not params.range then
 			return args

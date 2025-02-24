@@ -6,7 +6,11 @@ M.default = {
 	globalopts = {
 		format_on_save = true,
 	},
-	formatters = {},
+	sources = {
+		diagnostics = {},
+		formatting = {},
+	},
+	per_filetype = {},
 	log_level = vim.log.levels.INFO,
 }
 

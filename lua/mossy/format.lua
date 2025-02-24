@@ -1,12 +1,12 @@
 local log = require("mossy.log")
 local utils = require("mossy.utils")
-local ft = require("mossy.ft")
+local ft = require("mossy.filetype")
 
 local M = {}
 
 ---@param buf integer
 ---@param range? mossy.utils.range
----@param formatter mossy.fmt.config
+---@param formatter mossy.source.formatting
 ---@return true|any
 local function do_pure_fmt(buf, range, formatter)
 	local srow, erow = 0, -1
@@ -86,7 +86,7 @@ local function do_pure_fmt(buf, range, formatter)
 end
 
 ---@param buf integer
----@param formatter mossy.fmt.config
+---@param formatter mossy.source.formatting
 ---@return true|any
 local function do_impure_fmt(buf, formatter)
 	local errno = nil
@@ -114,15 +114,21 @@ end
 
 ---@param buf integer
 ---@param range? mossy.utils.range
----@param formatter mossy.fmt.config
+---@param formatter mossy.source.formatting
+---@param props mossy.format.props
 ---@return true|any
-local function do_fmt(buf, range, formatter)
+local function request_format(buf, range, formatter, props)
+	local format_on_save = true
+	if props.autoformat and not format_on_save then
+		return log.debug(("(%s) autoformat is disabled"):format(formatter.name))
+	end
+
 	if range and not formatter.stdin then
-		return log.debug("cannot format range with this formatter: " .. formatter.cmd)
+		return log.debug(("(%s) formatter cannot format range"):format(formatter.name))
 	end
 
 	if formatter.cond and not formatter.cond({ buf = buf, range = range }) then
-		return log.debug("condition returned false for formatter: " .. formatter.cmd)
+		return log.debug(("(%s) disabled by condition"):format(formatter.name))
 	end
 
 	local result = nil
@@ -136,20 +142,21 @@ local function do_fmt(buf, range, formatter)
 		return log.error(result)
 	end
 
-	log.debug("finished formatting")
+	log.debug(("(%s) finished formatting"):format(formatter.name))
 
 	return true
 end
 
 ---@param buf integer
-function M.fmt(buf)
+---@param props mossy.format.props
+function M.format(buf, props)
 	local filetype = vim.filetype.match({ buf = buf })
 	if not filetype then
 		return
 	end
-	local cfg = ft(filetype):fold()[filetype]
-	if not cfg.formatters or vim.tbl_isempty(cfg.formatters) then
-		return log.error("no formatters configured")
+	local formatters = ft.get(filetype, "formatting")
+	if #formatters == 0 then
+		return log.warn("no formatters configured")
 	end
 
 	local range = nil
@@ -159,8 +166,8 @@ function M.fmt(buf)
 	end
 
 	coroutine.resume(coroutine.create(function()
-		vim.iter(ipairs(cfg.formatters)):find(function(_, formatter)
-			return do_fmt(buf, range, formatter) == true
+		vim.iter(ipairs(formatters)):find(function(_, formatter)
+			return request_format(buf, range, formatter, props) == true
 		end)
 	end))
 end
