@@ -1,8 +1,8 @@
 # mossy.nvim
 
-## :sparkles: features
-
-a quick and easy formatting plugin.
+ ## :sparkles: features
+ 
+a simple and opinionated development plugin.
 
 ```lua
 local ft = require("mossy.ft")
