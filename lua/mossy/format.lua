@@ -131,6 +131,8 @@ local function request_format(buf, range, formatter, props)
 		return log.debug(("(%s) disabled by condition"):format(formatter.name))
 	end
 
+	log.debug(("(%s): pending format"):format(formatter.name))
+
 	local result = nil
 	if formatter.stdin then
 		result = do_pure_fmt(buf, range, formatter)
