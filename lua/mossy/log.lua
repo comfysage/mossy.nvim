@@ -2,7 +2,7 @@ local config = require("mossy.config")
 
 local log = {}
 
-local stack = {}
+log.stack = {}
 
 local function getdebuginfo()
 	local i = 2
@@ -26,7 +26,7 @@ function log.notify(msg, level)
 		debuginfo.name or "main",
 		debuginfo.short_src or "main loop"
 	)
-	stack[#stack + 1] = { level, info, msg }
+	log.stack[#log.stack + 1] = { level, info, msg }
 	msg = string.format("in %s:\n\t%s", info, msg)
 	if level >= vim.log.levels.ERROR then
 		return error(msg)
@@ -66,7 +66,7 @@ end
 ---@param level? integer
 ---@param limit? integer
 function log.get(level, limit)
-	local it = vim.iter(ipairs(stack)):filter(function(_, item)
+	local it = vim.iter(ipairs(log.stack)):filter(function(_, item)
 		if item[1] < level then
 			return false
 		end
