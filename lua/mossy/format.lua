@@ -156,7 +156,7 @@ function M.format(buf, props)
 	end
 	local formatters = ft.get(filetype, "formatting")
 	if #formatters == 0 then
-		local msg = "no formatters configured"
+		local msg = ("no formatters configured for filetype '%s'"):format(filetype)
 		if props.autoformat then
 			return log.debug(msg)
 		end
