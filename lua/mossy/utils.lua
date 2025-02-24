@@ -1,10 +1,10 @@
 local utils = {}
 
----@alias thistle.utils.range { ["rstart"|'rend']: { [1]: integer, [2]: integer } } uses (1, 0) indexing
+---@alias mossy.utils.range { ["rstart"|'rend']: { [1]: integer, [2]: integer } } uses (1, 0) indexing
 
 ---@param buf integer
 ---@param lineselect boolean
----@return thistle.utils.range
+---@return mossy.utils.range
 function utils.range_from_selection(buf, lineselect)
 	local rstart = vim.fn.getpos("v")
 	local rend = vim.fn.getpos(".")
@@ -80,8 +80,8 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
 	end
 end
 
----@param config thistle.fmt.config
----@param params thistle.fmt.params
+---@param config mossy.fmt.config
+---@param params mossy.fmt.params
 function utils.get_cmd(config, params)
 	local args = config.args or {}
 	if type(args) == "function" then
@@ -92,7 +92,7 @@ end
 
 ---@param cmd string[]
 ---@param cwd? string
----@param config thistle.fmt.config
+---@param config mossy.fmt.config
 ---@param lines string|string[]
 ---@return table | string
 function utils.spawn(cmd, cwd, config, lines)

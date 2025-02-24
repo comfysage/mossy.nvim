@@ -1,11 +1,11 @@
-# thistle.nvim
+# mossy.nvim
 
 ## :sparkles: features
 
 a quick and easy formatting plugin.
 
 ```lua
-local ft = require("thistle.ft")
+local ft = require("mossy.ft")
 -- use formatters for your favourite languages
 ft("lua"):use("stylua")
 ft("nix"):use("nixfmt")
@@ -32,14 +32,14 @@ inspired by:
 
 ## :package: installation
 
-Thistle can be installed by adding *this* to your `lua/plugins/init.lua`:
+mossy can be installed by adding *this* to your `lua/plugins/init.lua`:
 
 ```lua
 {
-  'comfysage/thistle.nvim',
+  'comfysage/mossy.nvim',
   after = function()
-    require 'thistle'.setup()
-    vim.keymap.set('n', '<localleader>f', require('thistle').format)
+    require 'mossy'.setup()
+    vim.keymap.set('n', '<localleader>f', require('mossy').format)
   end,
 }
 ```

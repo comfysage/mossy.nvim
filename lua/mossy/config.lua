@@ -1,6 +1,6 @@
 local M = {}
 
----@type thistle.config
+---@type mossy.config
 M.default = {
 	globalopts = {
 		format_on_save = true,
@@ -9,21 +9,21 @@ M.default = {
 	log_level = vim.log.levels.INFO,
 }
 
----@type thistle.config
+---@type mossy.config
 M.config = {}
 
----@return thistle.config
+---@return mossy.config
 function M.get()
 	return vim.tbl_deep_extend("force", M.default, M.config)
 end
 
----@param cfg thistle.config
----@return thistle.config
+---@param cfg mossy.config
+---@return mossy.config
 function M.override(cfg)
 	return vim.tbl_deep_extend("force", M.default, cfg)
 end
 
----@param cfg thistle.config
+---@param cfg mossy.config
 function M.set(cfg)
 	M.config = cfg
 end

@@ -1,12 +1,12 @@
-local log = require("thistle.log")
-local utils = require("thistle.utils")
-local ft = require("thistle.ft")
+local log = require("mossy.log")
+local utils = require("mossy.utils")
+local ft = require("mossy.ft")
 
 local M = {}
 
 ---@param buf integer
----@param range? thistle.utils.range
----@param formatter thistle.fmt.config
+---@param range? mossy.utils.range
+---@param formatter mossy.fmt.config
 ---@return true|any
 local function do_pure_fmt(buf, range, formatter)
 	local srow, erow = 0, -1
@@ -86,7 +86,7 @@ local function do_pure_fmt(buf, range, formatter)
 end
 
 ---@param buf integer
----@param formatter thistle.fmt.config
+---@param formatter mossy.fmt.config
 ---@return true|any
 local function do_impure_fmt(buf, formatter)
 	local errno = nil
@@ -113,8 +113,8 @@ local function do_impure_fmt(buf, formatter)
 end
 
 ---@param buf integer
----@param range? thistle.utils.range
----@param formatter thistle.fmt.config
+---@param range? mossy.utils.range
+---@param formatter mossy.fmt.config
 ---@return true|any
 local function do_fmt(buf, range, formatter)
 	if range and not formatter.stdin then

@@ -1,4 +1,4 @@
-local config = require("thistle.config")
+local config = require("mossy.config")
 
 local log = {}
 

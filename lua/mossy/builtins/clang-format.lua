@@ -1,4 +1,4 @@
-local h = require("thistle.helpers")
+local h = require("mossy.helpers")
 
 return {
 	cmd = "clang-format",

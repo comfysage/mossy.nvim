@@ -1,6 +1,6 @@
-local log = require("thistle.log")
+local log = require("mossy.log")
 
----@type { [string]: thistle.fmt.config }
+---@type { [string]: mossy.fmt.config }
 local formatters = {
 	lsp = {
 		fn = function(params)
@@ -15,7 +15,7 @@ return {
 		if formatter then
 			return formatter
 		end
-		local ok, result = pcall(require, string.format("thistle.builtins.%s", name))
+		local ok, result = pcall(require, string.format("mossy.builtins.%s", name))
 		if not ok then
 			return
 		end

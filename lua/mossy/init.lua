@@ -1,5 +1,5 @@
-local config = require("thistle.config")
-local ft = require("thistle.ft")
+local config = require("mossy.config")
+local ft = require("mossy.ft")
 
 local M = {}
 
@@ -8,9 +8,9 @@ function M.setup(cfg)
 	config.set(config.override(cfg))
 
 	vim.api.nvim_create_autocmd("BufAdd", {
-		group = vim.api.nvim_create_augroup("thistle.format:check", { clear = true }),
+		group = vim.api.nvim_create_augroup("mossy.format:check", { clear = true }),
 		callback = function(ev)
-			require("thistle").init(ev.buf)
+			require("mossy").init(ev.buf)
 		end,
 	})
 end
@@ -29,9 +29,9 @@ function M.init(buf)
 	end
 
 	vim.api.nvim_create_autocmd("BufWritePre", {
-		group = vim.api.nvim_create_augroup(("thistle.format[%d]"):format(buf), { clear = true }),
+		group = vim.api.nvim_create_augroup(("mossy.format[%d]"):format(buf), { clear = true }),
 		callback = function(ev)
-			require("thistle").format(ev.buf)
+			require("mossy").format(ev.buf)
 		end,
 		buffer = buf,
 	})
@@ -40,7 +40,7 @@ end
 ---@param buf? integer
 function M.format(buf)
 	buf = buf or 0
-	return require("thistle.fmt").fmt(buf)
+	return require("mossy.fmt").fmt(buf)
 end
 
 return M

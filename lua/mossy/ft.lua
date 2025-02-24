@@ -1,27 +1,27 @@
 ---@diagnostic disable: missing-fields
 
-local config = require("thistle.config")
+local config = require("mossy.config")
 
 local values = {}
 
----@class thistle.boxtbl.value
----@field formatters thistle.fmt.config[]
+---@class mossy.boxtbl.value
+---@field formatters mossy.fmt.config[]
 ---@field format_on_save boolean
 
----@class thistle.boxtbl
----@field __index thistle.boxtbl
----@field value thistle.boxtbl.value
----@field get fun(self): thistle.boxtbl.value
----@field get_global fun(self, filetypes): { [string]: thistle.boxtbl.value }
+---@class mossy.boxtbl
+---@field __index mossy.boxtbl
+---@field value mossy.boxtbl.value
+---@field get fun(self): mossy.boxtbl.value
+---@field get_global fun(self, filetypes): { [string]: mossy.boxtbl.value }
 ---@field ft fun(self): string[]
----@field push fun(self): thistle.boxtbl
----@field fold fun(self): { [string]: thistle.boxtbl.value }
----@field use fun(self, cfg): thistle.boxtbl
+---@field push fun(self): mossy.boxtbl
+---@field fold fun(self): { [string]: mossy.boxtbl.value }
+---@field use fun(self, cfg): mossy.boxtbl
 
 -- creates a meta box as a wrapper for a ft
 ---@param ft string|string[]
 local function box(ft)
-	---@type thistle.boxtbl
+	---@type mossy.boxtbl
 	local tbl = {}
 	tbl.__index = tbl
 
@@ -81,10 +81,10 @@ local function box(ft)
 		end)
 	end
 
-	---@param cfg thistle.fmt.config|string
+	---@param cfg mossy.fmt.config|string
 	local function parsecfg(cfg)
 		if type(cfg) == "string" then
-			local formatter = require("thistle.builtins").get(cfg)
+			local formatter = require("mossy.builtins").get(cfg)
 			if formatter then
 				return formatter
 			end
@@ -99,7 +99,7 @@ local function box(ft)
 		if cfg.stdin == nil then
 			cfg.stdin = true
 		end
-		---@cast cfg thistle.fmt.config
+		---@cast cfg mossy.fmt.config
 		return cfg
 	end
 
@@ -115,12 +115,12 @@ local function box(ft)
 	}, tbl)
 end
 
----@type fun(ft: string|string[]): thistle.boxtbl
+---@type fun(ft: string|string[]): mossy.boxtbl
 ---@diagnostic disable-next-line: assign-type-mismatch
 local _ft = setmetatable(values, {
 	---@param _self {}
 	---@param ft string|string[]
-	---@return thistle.boxtbl
+	---@return mossy.boxtbl
 	__call = function(_self, ft)
 		if not rawget(_self, ft) then
 			rawset(_self, ft, box(ft))

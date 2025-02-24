@@ -6,13 +6,13 @@ if not ok then
 	return
 end
 
-plenary.reload_module("thistle")
+plenary.reload_module("mossy")
 
-require("thistle").setup()
+require("mossy").setup()
 
-local ft = require("thistle.ft")
+local ft = require("mossy.ft")
 ft("lua"):use("stylua")
 -- local ft_all = ft("*"):use("prettier"):get()
 -- return ft("toml"):fold()
 -- return ft("lua"):fold()
-return require("thistle").format()
+return require("mossy").format()
