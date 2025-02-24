@@ -2,5 +2,6 @@
 return {
 	name = "nixfmt",
 	method = "formatting",
+	filetypes = { "nix" },
 	cmd = "nixfmt",
 }
