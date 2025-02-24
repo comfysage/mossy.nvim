@@ -1,6 +1,6 @@
 # mossy.nvim
 
-a simple and opinionated development plugin.
+:mushroom: a simple and opinionated development plugin.
 
 ```lua
 local ft = require("mossy.ft")
