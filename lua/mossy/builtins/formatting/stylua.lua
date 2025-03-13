@@ -9,7 +9,7 @@ return {
 	args = function(params)
 		local filename = vim.api.nvim_buf_get_name(params.buf)
 		return h.make_args_range({
-			"--search-parent-directory",
+			"--search-parent-directories",
 			"--stdin-filepath",
 			filename,
 			"-",
