@@ -1,4 +1,5 @@
 local log = require("mossy.log")
+local utils = require("mossy.utils")
 
 ---@type { [string]: mossy.source }
 local builtins = {
@@ -25,6 +26,6 @@ return {
 			builtin = result
 			return true
 		end)
-		return builtin
+		return utils.parsecfg(builtin)
 	end,
 }
