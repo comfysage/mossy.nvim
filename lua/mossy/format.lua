@@ -140,7 +140,7 @@ local function request_format(buf, range, formatter, props)
 		result = do_impure_fmt(buf, formatter)
 	end
 
-	if result then
+	if result and result ~= true then
 		return log.error(result)
 	end
 
