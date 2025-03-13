@@ -13,11 +13,11 @@ end
 function utils.parsecfg(cfg)
 	if type(cfg) == "string" then
 		local source = require("mossy.builtins").get(cfg)
-		if source then
-			return source
+		if not source then
+			return log.error(string.format("could not find builtin: '%s'", cfg))
 		end
 
-		return log.error(string.format("could not find builtin: '%s'", cfg))
+		return source
 	end
 	if not cfg.name then
 		return log.error("source has no name")
