@@ -43,6 +43,9 @@ local function do_pure_fmt(buf, range, formatter)
     end
 
     new_lines = result
+    if formatter.on_output then
+      new_lines = formatter.on_output(new_lines)
+    end
   end
 
   if not new_lines then
