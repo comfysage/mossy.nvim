@@ -158,6 +158,18 @@ local function request_format(buf, range, formatter, props)
 end
 
 ---@param buf integer
+---@param range? mossy.utils.range
+---@param props mossy.format.props
+function M.lsp_format(buf, range, props)
+  local formatter = require('mossy.builtins').get 'lsp'
+  if not formatter then
+    return log.error 'lsp builtin formatter could not be found'
+  end
+
+  return request_format(buf, range, formatter, props)
+end
+
+---@param buf integer
 ---@param props mossy.format.props
 function M.format(buf, props)
   local filetype = vim.filetype.match { buf = buf }
@@ -180,11 +192,24 @@ function M.format(buf, props)
     range = utils.range_from_selection(buf, mode == 'V')
   end
 
+  local default_use_lsp_fallback =
+    config.get().defaults.formatting.use_lsp_fallback
+
   coroutine.resume(coroutine.create(function()
     vim.iter(ipairs(formatters)):find(function(_, formatter)
       local result = request_format(buf, range, formatter, props)
       if result and result ~= true then
         log.debug(('error while formatting\n\t%s'):format(result))
+      end
+      local use_lsp_fallback = formatter.config.use_lsp_fallback
+      if use_lsp_fallback == nil then
+        use_lsp_fallback = default_use_lsp_fallback
+      end
+      if use_lsp_fallback then
+        result = M.lsp_format(buf, range, props)
+        if result and result ~= true then
+          log.debug(('error while formatting\n\t%s'):format(result))
+        end
       end
     end)
   end))

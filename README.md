@@ -61,6 +61,7 @@ Below is the default configuration.
 {
 	globalopts = {
 		format_on_save = true,
+		use_lsp_fallback = true,
 	},
 	formatters = {},
 	log_level = vim.log.levels.INFO,

@@ -5,6 +5,7 @@ M.default = {
   enable = true,
   globalopts = {
     format_on_save = true,
+    use_lsp_fallback = true,
   },
   sources = {
     diagnostics = {},

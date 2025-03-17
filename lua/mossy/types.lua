@@ -35,6 +35,7 @@
 ---@class mossy.diagnostics.config
 ---@class mossy.formatting.config
 ---@field format_on_save boolean
+---@field use_lsp_fallback boolean
 
 ---@class mossy.diagnostics.params
 ---@field buf integer
