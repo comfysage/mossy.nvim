@@ -24,6 +24,7 @@
 ---@field cmd? string
 ---@field args? string[]|fun(params: P): string[]
 ---@field stdin? boolean only used for formatting
+---@field on_output? fun(output: string): string
 ---@field fn? fun(params: P)
 ---@field env? { [string]: string }
 ---@field cond? fun(params: P)
