@@ -1,6 +1,7 @@
 local log = require 'mossy.log'
 local utils = require 'mossy.utils'
 local ft = require 'mossy.filetype'
+local config = require 'mossy.config'
 
 local M = {}
 
@@ -121,6 +122,14 @@ end
 ---@param props mossy.format.props
 ---@return true|any
 local function request_format(buf, range, formatter, props)
+  local format_on_save = formatter.config.format_on_save
+  if format_on_save == nil then
+    format_on_save = config.get().defaults.formatting.format_on_save
+  end
+  if props.autoformat and not format_on_save then
+    return log.error(('(%s) autoformat disabled'):format(formatter.name))
+  end
+
   if range and not formatter.stdin then
     return log.error(
       ('(%s) formatter cannot format range'):format(formatter.name)
@@ -180,9 +189,6 @@ function M.format(buf, props)
   local formatters = ft.get(filetype, 'formatting')
   if #formatters == 0 then
     local msg = ("no formatters configured for filetype '%s'"):format(filetype)
-    if props.autoformat then
-      return log.debug(msg)
-    end
     return log.warn(msg)
   end
 

@@ -59,11 +59,14 @@ Below is the default configuration.
 
 ```lua
 {
-	globalopts = {
-		format_on_save = true,
-		use_lsp_fallback = true,
+	enable = true,
+	defaults = {
+		formatting = {
+			format_on_save = true,
+			use_lsp_fallback = true,
+		},
+		diagnostics = {},
 	},
-	formatters = {},
 	log_level = vim.log.levels.INFO,
 }
 ```

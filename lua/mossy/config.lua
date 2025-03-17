@@ -3,9 +3,12 @@ local M = {}
 ---@type mossy.config
 M.default = {
   enable = true,
-  globalopts = {
-    format_on_save = true,
-    use_lsp_fallback = true,
+  defaults = {
+    formatting = {
+      format_on_save = true,
+      use_lsp_fallback = true,
+    },
+    diagnostics = {},
   },
   sources = {
     diagnostics = {},
