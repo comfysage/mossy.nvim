@@ -14,28 +14,22 @@
 ---@field diagnostics table<string, mossy.source.diagnostics>
 ---@field formatting table<string, mossy.source.formatting>
 
----@alias mossy.source mossy.source.diagnostics|mossy.source.formatting
----@class mossy.source.diagnostics
+---@generic T: mossy.method
+---@generic C: mossy.diagnostics.config|mossy.formatting.config
+---@generic P: mossy.diagnostics.params|mossy.formatting.params
+---@class mossy.source<T, C, P>
 ---@field name string
----@field method 'diagnostics'
+---@field method T
 ---@field filetypes? string[]
 ---@field cmd? string
----@field args? string[]|fun(params: mossy.diagnostics.params): string[]
----@field fn? fun(params: mossy.diagnostics.params)
+---@field args? string[]|fun(params: P): string[]
+---@field stdin? boolean only used for formatting
+---@field fn? fun(params: P)
 ---@field env? { [string]: string }
----@field cond? fun(params: mossy.diagnostics.params)
----@field config? mossy.diagnostics.config
----@class mossy.source.formatting
----@field name string
----@field method 'formatting'
----@field filetypes? string[]
----@field cmd? string
----@field args? string[]|fun(params: mossy.formatting.params): string[]
----@field fn? fun(params: mossy.formatting.params)
----@field stdin? boolean
----@field env? { [string]: string }
----@field cond? fun(params: mossy.formatting.params)
----@field config? mossy.formatting.config
+---@field cond? fun(params: P)
+---@field config? C
+---@alias mossy.source.diagnostics mossy.source<'diagnostics', mossy.diagnostics.config, mossy.diagnostics.params>
+---@alias mossy.source.formatting mossy.source<'formatting', mossy.formatting.config, mossy.formatting.params>
 
 ---@class mossy.diagnostics.config
 ---@class mossy.formatting.config
@@ -46,3 +40,17 @@
 ---@class mossy.formatting.params
 ---@field buf integer
 ---@field range? mossy.utils.range
+
+---@generic C: mossy.diagnostics.config|mossy.formatting.config
+---@generic P: mossy.diagnostics.params|mossy.formatting.params
+---@class mossy.source.opts<C, P>
+---@field filetypes? string[]
+---@field cmd? string
+---@field args? string[]|fun(params: P): string[]
+---@field stdin? boolean only used for formatting
+---@field fn? fun(params: P)
+---@field env? { [string]: string }
+---@field cond? fun(params: P)
+---@field config? C
+---@alias mossy.source.diagnostics.opts mossy.source.opts<mossy.diagnostics.config, mossy.diagnostics.params>
+---@alias mossy.source.formatting.opts mossy.source.opts<mossy.formatting.config, mossy.formatting.params>
