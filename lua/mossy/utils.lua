@@ -1,3 +1,5 @@
+local nio = require 'nio'
+
 local log = require 'mossy.log'
 
 local utils = {}
@@ -145,40 +147,30 @@ end
 ---@param config mossy.source.formatting
 ---@param params mossy.formatting.params
 function utils.get_cmd(config, params)
-  local cmd = { config.cmd }
-  if not config.args then
-    return cmd
-  end
+  local v = { cmd = config.cmd }
   local args = config.args or {}
   if type(args) == 'function' then
     args = args(params)
   end
-  return vim.list_extend(cmd, args)
+  v.args = args
+  return v
 end
 
----@param cmd string[]
+---@param cmd { cmd: string, args: string[] }
 ---@param cwd? string
 ---@param config mossy.source.formatting
 ---@param lines string|string[]
----@return table | string
+---@return nio.process.handle
+---@return string?
 function utils.spawn(cmd, cwd, config, lines)
-  local co = assert(coroutine.running())
-  local handle = vim.system(cmd, {
-    stdin = true,
+  local handle, err = nio.process.run(vim.tbl_extend('force', cmd, {
     cwd = cwd,
     env = config.env,
-  }, function(result)
-    if result.code ~= 0 and #result.stderr > 0 then
-      -- error
-      coroutine.resume(co, result)
-    else
-      coroutine.resume(co, result.stdout)
-    end
-  end)
+  }))
   -- write to stdin and close it
-  handle:write(lines)
-  handle:write(nil)
-  return coroutine.yield()
+  handle.stdin.write(lines)
+  handle.stdin.close()
+  return handle, err
 end
 
 return utils

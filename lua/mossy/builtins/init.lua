@@ -8,7 +8,7 @@ local builtins = {
     method = 'formatting',
     fn = function(params)
       vim.lsp.buf.format {
-        async = true,
+        async = false,
         bufnr = params.buf,
         range = params.range,
       }
