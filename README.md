@@ -38,6 +38,7 @@ inspired by:
 ## :lock: requirements
 
 - Neovim `>= 0.10.0`
+- [nvim-nio](https://github.com/nvim-neotest/nvim-nio)
 
 ## :package: installation
 
