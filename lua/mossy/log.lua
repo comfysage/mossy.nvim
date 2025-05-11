@@ -5,7 +5,7 @@ local log = {}
 log.stack = {}
 
 local function getdebuginfo()
-  local i = 2
+  local i = 3
   local info = debug.getinfo(i, 'nSf')
   local nextinfo = debug.getinfo(i + 1, 'n')
   while nextinfo and info.name == nil do
@@ -18,8 +18,8 @@ end
 
 ---@param msg string
 ---@param level integer
-function log.notify(msg, level)
-  local debuginfo = getdebuginfo()
+function log.notify(msg, level, debuginfo)
+  debuginfo = debuginfo or getdebuginfo()
   local info = string.format(
     '%s %s at %s',
     #debuginfo.namewhat > 0 and debuginfo.namewhat or 'chunk',
@@ -42,27 +42,27 @@ end
 
 ---@param msg string
 function log.trace(msg)
-  return log.notify(msg, vim.log.levels.TRACE)
+  return log.notify(msg, vim.log.levels.TRACE, getdebuginfo())
 end
 
 ---@param msg string
 function log.debug(msg)
-  return log.notify(msg, vim.log.levels.DEBUG)
+  return log.notify(msg, vim.log.levels.DEBUG, getdebuginfo())
 end
 
 ---@param msg string
 function log.info(msg)
-  return log.notify(msg, vim.log.levels.INFO)
+  return log.notify(msg, vim.log.levels.INFO, getdebuginfo())
 end
 
 ---@param msg string
 function log.warn(msg)
-  return log.notify(msg, vim.log.levels.WARN)
+  return log.notify(msg, vim.log.levels.WARN, getdebuginfo())
 end
 
 ---@param msg string
 function log.error(msg)
-  return log.notify(msg, vim.log.levels.ERROR)
+  return log.notify(msg, vim.log.levels.ERROR, getdebuginfo())
 end
 
 ---@param level? integer
