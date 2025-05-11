@@ -84,13 +84,6 @@ local mossy = {}
 function mossy.setup(cfg)
   cfg = cfg or {}
   config.set(config.override(cfg))
-
-  vim.api.nvim_create_autocmd('BufAdd', {
-    group = vim.api.nvim_create_augroup('mossy.format:check', { clear = true }),
-    callback = function(ev)
-      require('mossy').init(ev.buf)
-    end,
-  })
 end
 
 ---@param buf? integer
@@ -103,7 +96,7 @@ function mossy.init(buf)
       { clear = true }
     ),
     callback = function(ev)
-      if config.get().enable then
+      if require('mossy.config').get().enable then
         require('mossy').format(ev.buf, { autoformat = true })
       end
     end,
@@ -112,15 +105,15 @@ function mossy.init(buf)
 end
 
 function mossy.disable()
-  config.set(config.override { enable = false })
+  config.set(vim.tbl_deep_extend('force', config.get(), { enable = false }))
 end
 
 function mossy.enable()
-  config.set(config.override { enable = true })
+  config.set(vim.tbl_deep_extend('force', config.get(), { enable = true }))
 end
 
 function mossy.toggle()
-  if config.get().enable then
+  if require("mossy.config").get().enable then
     mossy.disable()
   else
     mossy.enable()

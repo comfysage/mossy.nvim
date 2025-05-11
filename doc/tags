@@ -6,6 +6,7 @@ config.set()	mossy.txt	/*config.set()*
 do_impure_fmt()	mossy.txt	/*do_impure_fmt()*
 do_pure_fmt()	mossy.txt	/*do_pure_fmt()*
 format.lsp_format()	mossy.txt	/*format.lsp_format()*
+format.request()	mossy.txt	/*format.request()*
 format.try()	mossy.txt	/*format.try()*
 ft.get()	mossy.txt	/*ft.get()*
 ft.get_all()	mossy.txt	/*ft.get_all()*
@@ -21,7 +22,6 @@ mossy.format()	mossy.txt	/*mossy.format()*
 mossy.init()	mossy.txt	/*mossy.init()*
 mossy.nvim	mossy.txt	/*mossy.nvim*
 mossy.setup()	mossy.txt	/*mossy.setup()*
-request_format()	mossy.txt	/*request_format()*
 tbl	mossy.txt	/*tbl*
 tbl:add()	mossy.txt	/*tbl:add()*
 tbl:get()	mossy.txt	/*tbl:get()*

@@ -34,9 +34,10 @@ function log.notify(msg, level, debuginfo)
   if level < config.get().log_level then
     return
   end
-  vim.schedule(function()
-    vim.notify(msg, level)
-  end)
+  if vim.in_fast_event() then
+    require("nio").scheduler()
+  end
+  vim.notify(msg, level)
   return level
 end
 

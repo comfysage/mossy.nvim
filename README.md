@@ -59,7 +59,6 @@ mossy can be installed by adding this to your `lua/plugins/init.lua`:
 {
   'comfysage/mossy.nvim',
   after = function()
-    require 'mossy'.setup()
     vim.keymap.set('n', '<localleader>f', require('mossy').format)
   end,
 }

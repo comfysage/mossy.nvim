@@ -1,6 +1,17 @@
 local h = {}
 
----@params string[]
+---@class mossy.helpers.make_args_range.keyset
+---@field delimiter? string
+---@field use_length? boolean
+---@field use_rows? boolean
+---@field row_offset integer
+---@field col_offset integer
+
+---@param args string[]
+---@param start_arg string
+---@param end_arg string
+---@param opts mossy.helpers.make_args_range.keyset
+---@return function
 function h.make_args_range(args, start_arg, end_arg, opts)
   ---@param params mossy.formatting.params
   return function(params)

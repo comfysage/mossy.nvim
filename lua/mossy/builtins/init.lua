@@ -1,4 +1,3 @@
-local log = require 'mossy.log'
 local utils = require 'mossy.utils'
 
 ---@type { [string]: mossy.source }

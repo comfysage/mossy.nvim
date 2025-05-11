@@ -42,6 +42,7 @@ inspired by:
 ## :lock: requirements
 
 - Neovim `>= 0.10.0`
+- [nvim-nio](https://github.com/nvim-neotest/nvim-nio)
 
 ## :package: installation
 
@@ -79,7 +80,7 @@ Below is the default configuration.
                                                                  *mossy.setup()*
                               `mossy.setup`({cfg})
 Parameters ~
-{cfg} `(optional)` mossy.config
+{cfg} `(optional)` `(mossy.config)`
 
 ------------------------------------------------------------------------------
                                                                   *mossy.init()*
@@ -91,14 +92,14 @@ Parameters ~
 Class ~
 {mossy.format.props}
 Fields ~
-{autoformat} `(optional)` true
+{autoformat} `(optional)` `(true)`
 
 ------------------------------------------------------------------------------
                                                                 *mossy.format()*
                          `mossy.format`({buf}, {props})
 Parameters ~
 {buf} `(optional)` `(integer)`
-{props} `(optional)` mossy.format.props
+{props} `(optional)` `(mossy.format.props)`
 
 
 ==============================================================================
@@ -106,33 +107,33 @@ Parameters ~
                                                                 *config.default*
                                 `config.default`
 Type ~
-mossy.config
+`(mossy.config)`
 
 ------------------------------------------------------------------------------
                                                                 *config.current*
                                 `config.current`
 Type ~
-mossy.config
+`(mossy.config)`
 
 ------------------------------------------------------------------------------
                                                                   *config.get()*
                                  `config.get`()
 Return ~
-mossy.config
+`(mossy.config)`
 
 ------------------------------------------------------------------------------
                                                              *config.override()*
                             `config.override`({cfg})
 Parameters ~
-{cfg} mossy.config
+{cfg} `(mossy.config)`
 Return ~
-mossy.config
+`(mossy.config)`
 
 ------------------------------------------------------------------------------
                                                                   *config.set()*
                               `config.set`({cfg})
 Parameters ~
-{cfg} mossy.config
+{cfg} `(mossy.config)`
 
 
 ==============================================================================
@@ -142,16 +143,16 @@ Parameters ~
 Parameters ~
 {filetype} `(string)`
 Return ~
-mossy.config.sources
+`(mossy.config.sources)`
 
 ------------------------------------------------------------------------------
                                                                       *ft.get()*
                          `ft.get`({filetype}, {method})
 Parameters ~
 {filetype} `(string)`
-{method} `(optional)` 'diagnostics'|'formatting'
+{method} `(optional)` '`(diagnostics)`'|'formatting'
 Return ~
-mossy.source[]
+`(mossy.source[])`
 
 
 ==============================================================================
@@ -160,8 +161,8 @@ mossy.source[]
                    `do_pure_fmt`({buf}, {range}, {formatter})
 Parameters ~
 {buf} `(integer)`
-{range} `(optional)` mossy.utils.range
-{formatter} mossy.source.formatting
+{range} `(optional)` `(mossy.utils.range)`
+{formatter} `(mossy.source.formatting)`
 Return ~
 `(true|any)`
 
@@ -170,18 +171,18 @@ Return ~
                       `do_impure_fmt`({buf}, {formatter})
 Parameters ~
 {buf} `(integer)`
-{formatter} mossy.source.formatting
+{formatter} `(mossy.source.formatting)`
 Return ~
 `(true|any)`
 
 ------------------------------------------------------------------------------
-                                                              *request_format()*
-             `request_format`({buf}, {range}, {formatter}, {props})
+                                                              *format.request()*
+             `format.request`({buf}, {range}, {formatter}, {props})
 Parameters ~
 {buf} `(integer)`
-{range} `(optional)` mossy.utils.range
-{formatter} mossy.source.formatting
-{props} mossy.format.props
+{range} `(optional)` `(mossy.utils.range)`
+{formatter} `(mossy.source.formatting)`
+{props} `(mossy.format.props)`
 Return ~
 `(true|any)`
 
@@ -190,28 +191,44 @@ Return ~
                   `format.lsp_format`({buf}, {range}, {props})
 Parameters ~
 {buf} `(integer)`
-{range} `(optional)` mossy.utils.range
-{props} mossy.format.props
+{range} `(optional)` `(mossy.utils.range)`
+{props} `(mossy.format.props)`
 
 ------------------------------------------------------------------------------
                                                                   *format.try()*
                           `format.try`({buf}, {props})
 Parameters ~
 {buf} `(integer)`
-{props} mossy.format.props
+{props} `(mossy.format.props)`
 
 
 ==============================================================================
 ------------------------------------------------------------------------------
+Class ~
+{mossy.helpers.make_args_range.keyset}
+Fields ~
+{delimiter} `(optional)` `(string)`
+{use_length} `(optional)` `(boolean)`
+{use_rows} `(optional)` `(boolean)`
+{row_offset} `(integer)`
+{col_offset} `(integer)`
+
+------------------------------------------------------------------------------
                                                            *h.make_args_range()*
           `h.make_args_range`({args}, {start_arg}, {end_arg}, {opts})
-string[]
+Parameters ~
+{args} `(string[])`
+{start_arg} `(string)`
+{end_arg} `(string)`
+{opts} `(mossy.helpers.make_args_range.keyset)`
+Return ~
+`(function)`
 
 
 ==============================================================================
 ------------------------------------------------------------------------------
                                                                   *log.notify()*
-                          `log.notify`({msg}, {level})
+                   `log.notify`({msg}, {level}, {debuginfo})
 Parameters ~
 {msg} `(string)`
 {level} `(integer)`
@@ -259,15 +276,15 @@ Parameters ~
 Class ~
 {mossy.proto.sources}
 Fields ~
-{__index} mossy.proto.sources
-{value} mossy.config.sources
-{lastsource} `(optional)` { [1]: mossy.method, [2]: `(string)` } ( method, name )
+{__index} `(mossy.proto.sources)`
+{value} `(mossy.config.sources)`
+{lastsource} `(optional)` `({ [1]: mossy.method, [2]: string })` ( method, name )
 
 ------------------------------------------------------------------------------
                                                                            *tbl*
                                      `tbl`
 Type ~
-mossy.proto.sources
+`(mossy.proto.sources)`
 
 ------------------------------------------------------------------------------
                                                                      *tbl:get()*
@@ -299,7 +316,7 @@ Fields ~
 Class ~
 {mossy.proto.sources}
 Fields ~
-{with} `(fun(self, cfg: mossy.source.opts): mossy.proto.sources)`
+{with} `(fun(self, cfg: mossy.source): mossy.proto.sources)`
 
 ------------------------------------------------------------------------------
                                                                    *tbl:setup()*
@@ -316,16 +333,16 @@ Class ~
 {mossy.config}
 Fields ~
 {enable} `(optional)` `(boolean)`
-{defaults} `(optional)` mossy.config.defaults
-{sources} `(optional)` mossy.config.sources
+{defaults} `(optional)` `(mossy.config.defaults)`
+{sources} `(optional)` `(mossy.config.sources)`
 {log_level} `(optional)` `(integer)`
 
 ------------------------------------------------------------------------------
 Class ~
 {mossy.config.defaults}
 Fields ~
-{diagnostics} mossy.diagnostics.config
-{formatting} mossy.formatting.config
+{diagnostics} `(mossy.diagnostics.config)`
+{formatting} `(mossy.formatting.config)`
 
 ------------------------------------------------------------------------------
 Class ~
@@ -335,23 +352,40 @@ Fields ~
 {formatting} `(table<string, mossy.source.formatting>)`
 
 ------------------------------------------------------------------------------
-T: 'diagnostics'|'formatting'
-C: mossy.diagnostics.config|mossy.formatting.config
-P: mossy.diagnostics.params|mossy.formatting.params
 Class ~
-{mossy.source<T,} C, P>
+{mossy.source}
 Fields ~
 {name} `(string)`
-{method} T
+{method} '`(diagnostics)`'|'formatting'
 {filetypes} `(optional)` `(string[])`
 {cmd} `(optional)` `(string)`
-{args} `(optional)` `(string[]|fun(params:)` P): string[]
+{args} `(optional)` `(string[]|fun(params: mossy.diagnostics.params|mossy.formatting.params): string[])`
 {stdin} `(optional)` `(boolean)` only used for formatting
 {on_output} `(optional)` `(fun(output: string): string)`
-{fn} `(optional)` `(fun(params: P))`
-{env} `(optional)` { `([string]:)` string }
-{cond} `(optional)` `(fun(params: P))`
-{config} `(optional)` C
+{fn} `(optional)` `(fun(params: mossy.diagnostics.params|mossy.formatting.params))`
+{env} `(optional)` `({ [string]: string })`
+{cond} `(optional)` `(fun(params: mossy.diagnostics.params|mossy.formatting.params))`
+{config} `(optional)` `(mossy.diagnostics.config|mossy.formatting.config)`
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.source.diagnostics} : mossy.source
+Fields ~
+{method} '`(diagnostics)`'
+{config} `(optional)` `(mossy.diagnostics.config)`
+{args} `(optional)` `(string[]|fun(params: mossy.diagnostics.params): string[])`
+{fn} `(optional)` `(fun(params: mossy.diagnostics.params))`
+{cond} `(optional)` `(fun(params: mossy.diagnostics.params))`
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.source.formatting} : mossy.source
+Fields ~
+{method} '`(formatting)`'
+{config} `(optional)` `(mossy.formatting.config)`
+{args} `(optional)` `(string[]|fun(params: mossy.formatting.params): string[])`
+{fn} `(optional)` `(fun(params: mossy.formatting.params))`
+{cond} `(optional)` `(fun(params: mossy.formatting.params))`
 
 ------------------------------------------------------------------------------
 Class ~
@@ -370,22 +404,7 @@ Fields ~
 Class ~
 {mossy.formatting.params}
 {buf} `(integer)`
-{range} `(optional)` mossy.utils.range
-
-------------------------------------------------------------------------------
-C: mossy.diagnostics.config|mossy.formatting.config
-P: mossy.diagnostics.params|mossy.formatting.params
-Class ~
-{mossy.source.opts<C,} P>
-Fields ~
-{filetypes} `(optional)` `(string[])`
-{cmd} `(optional)` `(string)`
-{args} `(optional)` `(string[]|fun(params:)` P): string[]
-{stdin} `(optional)` `(boolean)` only used for formatting
-{fn} `(optional)` `(fun(params: P))`
-{env} `(optional)` { `([string]:)` string }
-{cond} `(optional)` `(fun(params: P))`
-{config} `(optional)` C
+{range} `(optional)` `(mossy.utils.range)`
 
 
 ==============================================================================
@@ -393,7 +412,7 @@ Fields ~
                                                        *utils.is_valid_method()*
                        `utils.is_valid_method`({method})
 Parameters ~
-{method} 'diagnostics'|'formatting'
+{method} '`(diagnostics)`'|'formatting'
 Return ~
 `(boolean)`
 
@@ -412,7 +431,7 @@ Parameters ~
 {buf} `(integer)`
 {lineselect} `(boolean)`
 Return ~
-{ ["rstart"|'rend']: { [1]: `(integer,)` [2]: integer } } uses (1, 0) indexing
+`({ ["rstart"|'rend']: { [1]: integer, [2]: integer } })` uses (1, 0) indexing
 
 ------------------------------------------------------------------------------
                                                             *utils.save_views()*
@@ -420,13 +439,13 @@ Return ~
 Parameters ~
 {buf} `(integer)`
 Return ~
-{ `([integer]:)` table }
+`({ [integer]: table })`
 
 ------------------------------------------------------------------------------
                                                          *utils.restore_views()*
                          `utils.restore_views`({views})
 Parameters ~
-{views} { `([integer]:)` table }
+{views} `({ [integer]: table })`
 
 ------------------------------------------------------------------------------
                                                          *utils.update_buffer()*
@@ -444,19 +463,21 @@ Return ~
                                                                *utils.get_cmd()*
                       `utils.get_cmd`({config}, {params})
 Parameters ~
-{config} mossy.formatting.config, mossy.formatting.params>.opts mossy.source.opts<mossy.formatting.config, mossy.formatting.params> mossy.formatting.config, mossy.formatting.params>
-{params} mossy.formatting.params
+{config} `(mossy.source.formatting)`
+{params} `(mossy.formatting.params)`
 
 ------------------------------------------------------------------------------
                                                                  *utils.spawn()*
                  `utils.spawn`({cmd}, {cwd}, {config}, {lines})
 Parameters ~
-{cmd} `(string[])`
+{cmd} `({ cmd: string, args: string[] })`
 {cwd} `(optional)` `(string)`
-{config} mossy.formatting.config, mossy.formatting.params>.opts mossy.source.opts<mossy.formatting.config, mossy.formatting.params> mossy.formatting.config, mossy.formatting.params>
+{config} `(mossy.source.formatting)`
 {lines} `(string|string[])`
 Return ~
-`(table)` | string
+`(nio.process.handle)`
+Return ~
+`(string)` `(optional)`
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:

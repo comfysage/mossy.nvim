@@ -34,46 +34,33 @@ local function do_pure_fmt(buf, range, formatter)
   local errno = nil
   local new_lines = nil
 
-  local changedtick = -1
   -- NOTE: defer initialization, since BufWritePre would trigger a tick change
-  vim.schedule(function()
-    changedtick = vim.api.nvim_buf_get_changedtick(buf)
-  end)
-
-  local event = nio.control.event()
+  local changedtick = nio.api.nvim_buf_get_changedtick(buf)
 
   if formatter.fn then
-    nio.wrap(function(props)
-      new_lines = formatter.fn(props)
-      event.set()
-    end, 1) { buf = buf, range = range }
+    new_lines = formatter.fn({ buf = buf, range = range })
   else
-    nio.wrap(function(props)
-      local result, err = utils.spawn(
-        utils.get_cmd(formatter, props),
-        nil,
-        formatter,
-        prev_lines_str
-      )
-      if err then
-        -- indicates error
-        errno = {}
-        errno.code = result.pid
-        errno.reason = formatter.cmd .. ' exited with errors'
-        errno.cmd = formatter.cmd
-        errno.stderr = err
-        return errno
-      end
+    local result, err = utils.spawn(
+      utils.get_cmd(formatter, { buf = buf, range = range }),
+      nil,
+      formatter,
+      prev_lines_str
+    )
+    if err then
+      -- indicates error
+      errno = {}
+      errno.code = result.pid
+      errno.reason = formatter.cmd .. ' exited with errors'
+      errno.cmd = formatter.cmd
+      errno.stderr = err
+      return errno
+    end
 
-      new_lines = result.stdout.read()
-      if formatter.on_output then
-        new_lines = formatter.on_output(new_lines)
-      end
-      event.set()
-    end, 1) { buf = buf, range = range }
+    new_lines = result.stdout.read()
+    if formatter.on_output then
+      new_lines = formatter.on_output(new_lines)
+    end
   end
-
-  event.wait()
 
   if formatter.fn and not new_lines then
     return errno
@@ -83,22 +70,18 @@ local function do_pure_fmt(buf, range, formatter)
     return 'no newlines returned'
   end
 
-  vim.schedule(function()
-    -- check if we are in a valid state
-    if vim.api.nvim_buf_get_changedtick(buf) ~= changedtick then
-      errno = 'buffer changed'
-      return
-    end
+  log.trace("got newlines")
 
-    if not vim.api.nvim_buf_is_valid(buf) then
-      errno = 'buffer no longer valid'
-      return
-    end
+  -- check if we are in a valid state
+  if nio.api.nvim_buf_get_changedtick(buf) ~= changedtick then
+    return 'buffer changed'
+  end
 
-    -- TODO: add `on_output` field to formatter
+  if not nio.api.nvim_buf_is_valid(buf) then
+    return 'buffer no longer valid'
+  end
 
-    errno = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
-  end)
+  errno = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
 
   if errno then
     if errno.cmd and errno.code and errno.stderr then
@@ -208,6 +191,7 @@ function format.lsp_format(buf, range, props)
   if not formatter then
     return log.debug 'lsp builtin formatter could not be found'
   end
+  ---@cast formatter mossy.source.formatting
 
   return format.request(buf, range, formatter, props)
 end

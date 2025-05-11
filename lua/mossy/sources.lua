@@ -47,7 +47,7 @@ function tbl:add(cfg)
 end
 
 ---@class mossy.proto.sources
----@field with fun(self, cfg: mossy.source.opts): mossy.proto.sources
+---@field with fun(self, cfg: mossy.source): mossy.proto.sources
 function tbl:with(cfg)
   if
     not self.lastsource or not vim.tbl_get(self:get(), unpack(self.lastsource))
