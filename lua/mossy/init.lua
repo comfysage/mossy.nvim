@@ -1,9 +1,9 @@
 local config = require 'mossy.config'
 
-local M = {}
+local mossy = {}
 
 ---@param cfg? mossy.config
-function M.setup(cfg)
+function mossy.setup(cfg)
   cfg = cfg or {}
   config.set(config.override(cfg))
 
@@ -16,7 +16,7 @@ function M.setup(cfg)
 end
 
 ---@param buf? integer
-function M.init(buf)
+function mossy.init(buf)
   buf = buf or 0
 
   vim.api.nvim_create_autocmd('BufWritePre', {
@@ -33,19 +33,19 @@ function M.init(buf)
   })
 end
 
-function M.disable()
+function mossy.disable()
   config.set(config.override { enable = false })
 end
 
-function M.enable()
+function mossy.enable()
   config.set(config.override { enable = true })
 end
 
-function M.toggle()
+function mossy.toggle()
   if config.get().enable then
-    M.disable()
+    mossy.disable()
   else
-    M.enable()
+    mossy.enable()
   end
 end
 
@@ -54,9 +54,9 @@ end
 
 ---@param buf? integer
 ---@param props? mossy.format.props
-function M.format(buf, props)
+function mossy.format(buf, props)
   buf = buf or 0
-  return require('mossy.format').format(buf, props or {})
+  return require('mossy.format').try(buf, props or {})
 end
 
-return M
+return mossy

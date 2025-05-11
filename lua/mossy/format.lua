@@ -3,7 +3,7 @@ local utils = require 'mossy.utils'
 local ft = require 'mossy.filetype'
 local config = require 'mossy.config'
 
-local M = {}
+local format = {}
 
 ---@param buf integer
 ---@param range? mossy.utils.range
@@ -169,7 +169,7 @@ end
 ---@param buf integer
 ---@param range? mossy.utils.range
 ---@param props mossy.format.props
-function M.lsp_format(buf, range, props)
+function format.lsp_format(buf, range, props)
   local formatter = require('mossy.builtins').get 'lsp'
   if not formatter then
     return log.error 'lsp builtin formatter could not be found'
@@ -180,7 +180,7 @@ end
 
 ---@param buf integer
 ---@param props mossy.format.props
-function M.format(buf, props)
+function format.try(buf, props)
   local filetype = vim.filetype.match { buf = buf }
   if not filetype then
     log.warn 'unable to detect filetype'
@@ -212,7 +212,7 @@ function M.format(buf, props)
         use_lsp_fallback = default_use_lsp_fallback
       end
       if use_lsp_fallback then
-        result = M.lsp_format(buf, range, props)
+        result = format.lsp_format(buf, range, props)
         if result and result ~= true then
           log.debug(('error while formatting\n\t%s'):format(result))
         end
@@ -221,4 +221,4 @@ function M.format(buf, props)
   end))
 end
 
-return M
+return format

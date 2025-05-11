@@ -1,7 +1,7 @@
-local M = {}
+local config = {}
 
 ---@type mossy.config
-M.default = {
+config.default = {
   enable = true,
   defaults = {
     formatting = {
@@ -19,22 +19,22 @@ M.default = {
 }
 
 ---@type mossy.config
-M.config = {}
+config.current = {}
 
 ---@return mossy.config
-function M.get()
-  return vim.tbl_deep_extend('force', M.default, M.config)
+function config.get()
+  return vim.tbl_deep_extend('force', config.default, config.current)
 end
 
 ---@param cfg mossy.config
 ---@return mossy.config
-function M.override(cfg)
-  return vim.tbl_deep_extend('force', M.default, cfg)
+function config.override(cfg)
+  return vim.tbl_deep_extend('force', config.default, cfg)
 end
 
 ---@param cfg mossy.config
-function M.set(cfg)
-  M.config = cfg
+function config.set(cfg)
+  config.current = cfg
 end
 
-return M
+return config
