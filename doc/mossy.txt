@@ -1,0 +1,462 @@
+*mossy.nvim*
+
+==============================================================================
+
+# mossy.nvim
+
+:mushroom: a simple and opinionated development plugin.
+
+```lua
+local ft = require("mossy.ft")
+-- use formatters for your favourite languages
+ft("lua"):use("stylua")
+ft("nix"):use("nixfmt")
+
+-- add a formatter for multiple languages
+ft({ "html", "astro", "vue" }):use("prettier")
+
+-- add a default formatter for all languages
+ft("*"):use({
+  cmd = "treefmt",
+  args = function(params)
+    local filename = vim.api.nvim_buf_get_name(params.buf)
+    return { "--allow-missing-formatter", "--stdin", filename }
+  end,
+})
+```
+
+inspired by:
+- [none-ls](https://github.com/nvimtools/none-ls.nvim) - Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
+- [guard.nvim](https://github.com/nvimdev/guard.nvim) - Lightweight, fast and async formatting and linting plugin for Neovim
+
+## :sparkles: features
+
+- [x] `ft()`: easy declaration of formatters for each filetype
+- [x] `ft():use()`: ordered formatter declaration
+- [x] `formatter.args`: dynamic arguments for formatters
+- [x] `formatter.cond`: conditional formatters: use a predicate to enable formatter
+- [ ] lsp fallback: use an lsp server to format the file if others failed
+- [ ] *linters*: support for lsp linters
+- [ ] *nvim events*: use autocmds to extend mossy's behaviour
+
+## :lock: requirements
+
+- Neovim `>= 0.10.0`
+
+## :package: installation
+
+mossy can be installed by adding this to your `lua/plugins/init.lua`:
+
+```lua
+{
+  'comfysage/mossy.nvim',
+  after = function()
+    require 'mossy'.setup()
+    vim.keymap.set('n', '<localleader>f', require('mossy').format)
+  end,
+}
+```
+
+## :gear: configuration
+
+Below is the default configuration.
+
+```lua
+{
+	enable = true,
+	defaults = {
+		formatting = {
+			format_on_save = true,
+			use_lsp_fallback = true,
+		},
+		diagnostics = {},
+	},
+	log_level = vim.log.levels.INFO,
+}
+```
+
+------------------------------------------------------------------------------
+                                                                 *mossy.setup()*
+                              `mossy.setup`({cfg})
+Parameters ~
+{cfg} `(optional)` mossy.config
+
+------------------------------------------------------------------------------
+                                                                  *mossy.init()*
+                              `mossy.init`({buf})
+Parameters ~
+{buf} `(optional)` `(integer)`
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.format.props}
+Fields ~
+{autoformat} `(optional)` true
+
+------------------------------------------------------------------------------
+                                                                *mossy.format()*
+                         `mossy.format`({buf}, {props})
+Parameters ~
+{buf} `(optional)` `(integer)`
+{props} `(optional)` mossy.format.props
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                *config.default*
+                                `config.default`
+Type ~
+mossy.config
+
+------------------------------------------------------------------------------
+                                                                *config.current*
+                                `config.current`
+Type ~
+mossy.config
+
+------------------------------------------------------------------------------
+                                                                  *config.get()*
+                                 `config.get`()
+Return ~
+mossy.config
+
+------------------------------------------------------------------------------
+                                                             *config.override()*
+                            `config.override`({cfg})
+Parameters ~
+{cfg} mossy.config
+Return ~
+mossy.config
+
+------------------------------------------------------------------------------
+                                                                  *config.set()*
+                              `config.set`({cfg})
+Parameters ~
+{cfg} mossy.config
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                  *ft.get_all()*
+                            `ft.get_all`({filetype})
+Parameters ~
+{filetype} `(string)`
+Return ~
+mossy.config.sources
+
+------------------------------------------------------------------------------
+                                                                      *ft.get()*
+                         `ft.get`({filetype}, {method})
+Parameters ~
+{filetype} `(string)`
+{method} `(optional)` 'diagnostics'|'formatting'
+Return ~
+mossy.source[]
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                 *do_pure_fmt()*
+                   `do_pure_fmt`({buf}, {range}, {formatter})
+Parameters ~
+{buf} `(integer)`
+{range} `(optional)` mossy.utils.range
+{formatter} mossy.source.formatting
+Return ~
+`(true|any)`
+
+------------------------------------------------------------------------------
+                                                               *do_impure_fmt()*
+                      `do_impure_fmt`({buf}, {formatter})
+Parameters ~
+{buf} `(integer)`
+{formatter} mossy.source.formatting
+Return ~
+`(true|any)`
+
+------------------------------------------------------------------------------
+                                                              *request_format()*
+             `request_format`({buf}, {range}, {formatter}, {props})
+Parameters ~
+{buf} `(integer)`
+{range} `(optional)` mossy.utils.range
+{formatter} mossy.source.formatting
+{props} mossy.format.props
+Return ~
+`(true|any)`
+
+------------------------------------------------------------------------------
+                                                           *format.lsp_format()*
+                  `format.lsp_format`({buf}, {range}, {props})
+Parameters ~
+{buf} `(integer)`
+{range} `(optional)` mossy.utils.range
+{props} mossy.format.props
+
+------------------------------------------------------------------------------
+                                                                  *format.try()*
+                          `format.try`({buf}, {props})
+Parameters ~
+{buf} `(integer)`
+{props} mossy.format.props
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                           *h.make_args_range()*
+          `h.make_args_range`({args}, {start_arg}, {end_arg}, {opts})
+string[]
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                  *log.notify()*
+                          `log.notify`({msg}, {level})
+Parameters ~
+{msg} `(string)`
+{level} `(integer)`
+
+------------------------------------------------------------------------------
+                                                                   *log.trace()*
+                               `log.trace`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                                   *log.debug()*
+                               `log.debug`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                                    *log.info()*
+                               `log.info`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                                    *log.warn()*
+                               `log.warn`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                                   *log.error()*
+                               `log.error`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                                     *log.get()*
+                          `log.get`({level}, {limit})
+Parameters ~
+{level} `(optional)` `(integer)`
+{limit} `(optional)` `(integer)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+Class ~
+{mossy.proto.sources}
+Fields ~
+{__index} mossy.proto.sources
+{value} mossy.config.sources
+{lastsource} `(optional)` { [1]: mossy.method, [2]: `(string)` } ( method, name )
+
+------------------------------------------------------------------------------
+                                                                           *tbl*
+                                     `tbl`
+Type ~
+mossy.proto.sources
+
+------------------------------------------------------------------------------
+                                                                     *tbl:get()*
+                                  `tbl:get`()
+Class ~
+{mossy.proto.sources}
+Fields ~
+{get} `(fun(): mossy.config.sources)`
+
+------------------------------------------------------------------------------
+                                                                    *tbl:push()*
+                                  `tbl:push`()
+Class ~
+{mossy.proto.sources}
+Fields ~
+{push} `(fun(): mossy.proto.sources)`
+
+------------------------------------------------------------------------------
+                                                                     *tbl:add()*
+                                `tbl:add`({cfg})
+Class ~
+{mossy.proto.sources}
+Fields ~
+{add} `(fun(self, cfg: mossy.source|string): mossy.proto.sources)`
+
+------------------------------------------------------------------------------
+                                                                    *tbl:with()*
+                               `tbl:with`({cfg})
+Class ~
+{mossy.proto.sources}
+Fields ~
+{with} `(fun(self, cfg: mossy.source.opts): mossy.proto.sources)`
+
+------------------------------------------------------------------------------
+                                                                   *tbl:setup()*
+                             `tbl:setup`({sources})
+Class ~
+{mossy.proto.sources}
+Fields ~
+{setup} `(fun(self, sources: mossy.source|string[]))`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+Class ~
+{mossy.config}
+Fields ~
+{enable} `(optional)` `(boolean)`
+{defaults} `(optional)` mossy.config.defaults
+{sources} `(optional)` mossy.config.sources
+{log_level} `(optional)` `(integer)`
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.config.defaults}
+Fields ~
+{diagnostics} mossy.diagnostics.config
+{formatting} mossy.formatting.config
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.config.sources}
+Fields ~
+{diagnostics} `(table<string, mossy.source.diagnostics>)`
+{formatting} `(table<string, mossy.source.formatting>)`
+
+------------------------------------------------------------------------------
+T: 'diagnostics'|'formatting'
+C: mossy.diagnostics.config|mossy.formatting.config
+P: mossy.diagnostics.params|mossy.formatting.params
+Class ~
+{mossy.source<T,} C, P>
+Fields ~
+{name} `(string)`
+{method} T
+{filetypes} `(optional)` `(string[])`
+{cmd} `(optional)` `(string)`
+{args} `(optional)` `(string[]|fun(params:)` P): string[]
+{stdin} `(optional)` `(boolean)` only used for formatting
+{on_output} `(optional)` `(fun(output: string): string)`
+{fn} `(optional)` `(fun(params: P))`
+{env} `(optional)` { `([string]:)` string }
+{cond} `(optional)` `(fun(params: P))`
+{config} `(optional)` C
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.diagnostics.config}
+Class ~
+{mossy.formatting.config}
+Fields ~
+{format_on_save} `(boolean)`
+{use_lsp_fallback} `(boolean)`
+
+------------------------------------------------------------------------------
+Class ~
+{mossy.diagnostics.params}
+Fields ~
+{buf} `(integer)`
+Class ~
+{mossy.formatting.params}
+{buf} `(integer)`
+{range} `(optional)` mossy.utils.range
+
+------------------------------------------------------------------------------
+C: mossy.diagnostics.config|mossy.formatting.config
+P: mossy.diagnostics.params|mossy.formatting.params
+Class ~
+{mossy.source.opts<C,} P>
+Fields ~
+{filetypes} `(optional)` `(string[])`
+{cmd} `(optional)` `(string)`
+{args} `(optional)` `(string[]|fun(params:)` P): string[]
+{stdin} `(optional)` `(boolean)` only used for formatting
+{fn} `(optional)` `(fun(params: P))`
+{env} `(optional)` { `([string]:)` string }
+{cond} `(optional)` `(fun(params: P))`
+{config} `(optional)` C
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                       *utils.is_valid_method()*
+                       `utils.is_valid_method`({method})
+Parameters ~
+{method} 'diagnostics'|'formatting'
+Return ~
+`(boolean)`
+
+------------------------------------------------------------------------------
+                                                              *utils.parsecfg()*
+                            `utils.parsecfg`({cfg})
+Parameters ~
+{cfg} `(mossy.source|string)`
+Return ~
+`(mossy.source|any)`
+
+------------------------------------------------------------------------------
+                                                  *utils.range_from_selection()*
+               `utils.range_from_selection`({buf}, {lineselect})
+Parameters ~
+{buf} `(integer)`
+{lineselect} `(boolean)`
+Return ~
+{ ["rstart"|'rend']: { [1]: `(integer,)` [2]: integer } } uses (1, 0) indexing
+
+------------------------------------------------------------------------------
+                                                            *utils.save_views()*
+                           `utils.save_views`({buf})
+Parameters ~
+{buf} `(integer)`
+Return ~
+{ `([integer]:)` table }
+
+------------------------------------------------------------------------------
+                                                         *utils.restore_views()*
+                         `utils.restore_views`({views})
+Parameters ~
+{views} { `([integer]:)` table }
+
+------------------------------------------------------------------------------
+                                                         *utils.update_buffer()*
+    `utils.update_buffer`({buf}, {prev_lines}, {new_lines}, {srow}, {erow})
+Parameters ~
+{buf} `(integer)`
+{prev_lines} `(string[])`
+{new_lines} `(string)`
+{srow} `(integer)`
+{erow} `(integer)`
+Return ~
+`(string)` `(optional)`
+
+------------------------------------------------------------------------------
+                                                               *utils.get_cmd()*
+                      `utils.get_cmd`({config}, {params})
+Parameters ~
+{config} mossy.formatting.config, mossy.formatting.params>.opts mossy.source.opts<mossy.formatting.config, mossy.formatting.params> mossy.formatting.config, mossy.formatting.params>
+{params} mossy.formatting.params
+
+------------------------------------------------------------------------------
+                                                                 *utils.spawn()*
+                 `utils.spawn`({cmd}, {cwd}, {config}, {lines})
+Parameters ~
+{cmd} `(string[])`
+{cwd} `(optional)` `(string)`
+{config} mossy.formatting.config, mossy.formatting.params>.opts mossy.source.opts<mossy.formatting.config, mossy.formatting.params> mossy.formatting.config, mossy.formatting.params>
+{lines} `(string|string[])`
+Return ~
+`(table)` | string
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

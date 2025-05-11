@@ -41,7 +41,7 @@ inspired by:
 
 ## :package: installation
 
-mossy can be installed by adding *this* to your `lua/plugins/init.lua`:
+mossy can be installed by adding this to your `lua/plugins/init.lua`:
 
 ```lua
 {
