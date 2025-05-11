@@ -158,21 +158,21 @@ local function request_format(buf, range, formatter, props)
     format_on_save = config.get().defaults.formatting.format_on_save
   end
   if props.autoformat and not format_on_save then
-    return log.error(('(%s) autoformat disabled'):format(formatter.name))
+    return log.trace(('(%s) autoformat disabled'):format(formatter.name))
   end
 
   if range and not formatter.stdin then
-    return log.error(
+    return log.warn(
       ('(%s) formatter cannot format range'):format(formatter.name)
     )
   end
 
   if formatter.cond and not formatter.cond { buf = buf, range = range } then
-    return log.error(('(%s) disabled by condition'):format(formatter.name))
+    return log.trace(('(%s) disabled by condition'):format(formatter.name))
   end
 
   if formatter.cmd and vim.fn.executable(formatter.cmd) == 0 then
-    return log.error(
+    return log.warn(
       ('(%s) executable not found `%s`'):format(formatter.name, formatter.cmd)
     )
   end
@@ -205,7 +205,7 @@ end
 function format.lsp_format(buf, range, props)
   local formatter = require('mossy.builtins').get 'lsp'
   if not formatter then
-    return log.error 'lsp builtin formatter could not be found'
+    return log.debug 'lsp builtin formatter could not be found'
   end
 
   return request_format(buf, range, formatter, props)
