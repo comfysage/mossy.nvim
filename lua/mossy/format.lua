@@ -5,6 +5,7 @@ local utils = require 'mossy.utils'
 local ft = require 'mossy.filetype'
 local config = require 'mossy.config'
 
+---@private
 ---@param formatter mossy.source.formatting
 ---@param arg1 string
 ---@param ... string
@@ -152,7 +153,7 @@ end
 ---@param formatter mossy.source.formatting
 ---@param props mossy.format.props
 ---@return true|any
-local function request_format(buf, range, formatter, props)
+function format.request(buf, range, formatter, props)
   local format_on_save = fmt_get_option(formatter, 'format_on_save')
   if format_on_save == nil then
     format_on_save = config.get().defaults.formatting.format_on_save
@@ -208,7 +209,7 @@ function format.lsp_format(buf, range, props)
     return log.debug 'lsp builtin formatter could not be found'
   end
 
-  return request_format(buf, range, formatter, props)
+  return format.request(buf, range, formatter, props)
 end
 
 ---@param buf integer
@@ -232,7 +233,7 @@ function format.try(buf, props)
   end
 
   vim.iter(ipairs(formatters)):find(function(_, formatter)
-    local result = request_format(buf, range, formatter, props)
+    local result = format.request(buf, range, formatter, props)
     if result and result ~= true then
       log.debug(('error while formatting\n\t%s'):format(result))
       local use_lsp_fallback = fmt_get_option(formatter, 'use_lsp_fallback')
