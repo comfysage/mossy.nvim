@@ -21,6 +21,9 @@ function utils.parsecfg(cfg)
 
     return source
   end
+  if type(cfg) ~= 'table' then
+    return log.error 'invalid cfg type: expected table, got: '..type(cfg)
+  end
   if not cfg.name then
     return log.error 'source has no name'
   end
