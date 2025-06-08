@@ -3,22 +3,33 @@
 :mushroom: a simple and opinionated development plugin.
 
 ```lua
-local ft = require("mossy.ft")
+local sources = require("mossy.sources")
+
 -- use formatters for your favourite languages
-ft("lua"):use("stylua")
-ft("nix"):use("nixfmt")
+sources:setup({
+  "treefmt",
+  "clang-format",
+  "nixfmt",
+  "shfmt",
+  "stylua",
+})
 
 -- add a formatter for multiple languages
-ft({ "html", "astro", "vue" }):use("prettier")
-
--- add a default formatter for all languages
-ft("*"):use({
-  cmd = "treefmt",
-  args = function(params)
-    local filename = vim.api.nvim_buf_get_name(params.buf)
-    return { "--allow-missing-formatter", "--stdin", filename }
-  end,
+sources:add("prettier"):with({
+  filetypes = { "html", "markdown", "astro", "vue" },
 })
+
+-- configure custom formatters
+sources:add({
+  name = "typstyle",
+  cmd = "typstyle",
+  method = "formatting",
+  filetypes = { "typst" },
+  stdin = true,
+})
+
+-- add a keymap to format your buffer
+vim.keymap.set("n", "<localleader>f", require("mossy").format)
 ```
 
 inspired by:
@@ -31,7 +42,7 @@ inspired by:
 - [x] `ft():use()`: ordered formatter declaration
 - [x] `formatter.args`: dynamic arguments for formatters
 - [x] `formatter.cond`: conditional formatters: use a predicate to enable formatter
-- [ ] lsp fallback: use an lsp server to format the file if others failed
+- [x] lsp fallback: use an lsp server to format the file if others failed
 - [ ] *linters*: support for lsp linters
 - [ ] *nvim events*: use autocmds to extend mossy's behaviour
 
