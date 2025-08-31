@@ -123,26 +123,29 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
     return 'no new lines'
   end
 
-  local views = utils.save_views(buf)
   -- \r\n for windows compatibility
   ---@diagnostic disable-next-line: cast-local-type
   new_lines = vim.split(new_lines, '\r?\n')
+
   if new_lines[#new_lines] == '' then
     new_lines[#new_lines] = nil
   end
 
-  if not vim.deep_equal(new_lines, prev_lines) then
-    ---@type number?
-    local old_indent
-    if vim.api.nvim_get_mode().mode == 'V' then
-      old_indent = vim.fn.indent(srow + 1)
-    end
-    vim.api.nvim_buf_set_lines(buf, srow, erow, false, new_lines)
-    if old_indent then
-      vim.cmd(('silent %d,%dleft'):format(srow + 1, erow))
-    end
-    utils.restore_views(views)
+  if vim.deep_equal(new_lines, prev_lines) then
+    return
   end
+
+  local views = utils.save_views(buf)
+  ---@type number?
+  local old_indent
+  if vim.api.nvim_get_mode().mode == 'V' then
+    old_indent = vim.fn.indent(srow + 1)
+  end
+  vim.api.nvim_buf_set_lines(buf, srow, erow, false, new_lines)
+  if old_indent then
+    vim.cmd(('silent %d,%dleft'):format(srow + 1, erow))
+  end
+  utils.restore_views(views)
 
   log.debug 'finished updating buffer'
 end
