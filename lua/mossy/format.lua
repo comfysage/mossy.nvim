@@ -18,6 +18,7 @@ end
 
 local format = {}
 
+---@async
 ---@param buf integer
 ---@param range? mossy.utils.range
 ---@param formatter mossy.source.formatting
@@ -28,7 +29,7 @@ local function do_pure_fmt(buf, range, formatter)
     srow = range.rstart[1] - 1
     erow = range.rend[1]
   end
-  local prev_lines = vim.api.nvim_buf_get_lines(buf, srow, erow, false)
+  local prev_lines = nio.api.nvim_buf_get_lines(buf, srow, erow, false)
   local prev_lines_str = table.concat(prev_lines, "\n")
   local new_lines = nil
 
@@ -85,6 +86,7 @@ local function do_pure_fmt(buf, range, formatter)
   end
 end
 
+---@async
 ---@param buf integer
 ---@param formatter mossy.source.formatting
 ---@return string? err
@@ -99,12 +101,10 @@ local function do_impure_fmt(buf, formatter)
     return ("%s exited with code %d\n%s"):format(formatter.cmd, result.pid, err)
   end
 
-  vim.schedule(function()
-    vim.api.nvim_buf_call(buf, function()
-      local views = utils.save_views(buf)
-      vim.api.nvim_command("silent! edit!")
-      utils.restore_views(views)
-    end)
+  nio.api.nvim_buf_call(buf, function()
+    local views = utils.save_views(buf)
+    nio.api.nvim_command("silent! edit!")
+    utils.restore_views(views)
   end)
 end
 

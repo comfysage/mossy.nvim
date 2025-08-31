@@ -93,25 +93,28 @@ function utils.range_from_selection(buf, lineselect)
   }
 end
 
+---@async
 ---@param buf integer
 ---@return { [integer]: table }
 function utils.save_views(buf)
   local views = {}
-  for _, win in ipairs(vim.fn.win_findbuf(buf)) do
-    views[win] = vim.api.nvim_win_call(win, vim.fn.winsaveview)
+  for _, win in ipairs(nio.fn.win_findbuf(buf)) do
+    views[win] = nio.api.nvim_win_call(win, nio.fn.winsaveview)
   end
   return views
 end
 
+---@async
 ---@param views { [integer]: table }
 function utils.restore_views(views)
   for win, view in pairs(views) do
-    vim.api.nvim_win_call(win, function()
-      vim.fn.winrestview(view)
+    nio.api.nvim_win_call(win, function()
+      nio.fn.winrestview(view)
     end)
   end
 end
 
+---@async
 ---@param buf integer
 ---@param prev_lines string[]
 ---@param new_lines string
@@ -138,10 +141,10 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
   local views = utils.save_views(buf)
   ---@type number?
   local old_indent
-  if vim.api.nvim_get_mode().mode == 'V' then
+  if nio.api.nvim_get_mode().mode == 'V' then
     old_indent = vim.fn.indent(srow + 1)
   end
-  vim.api.nvim_buf_set_lines(buf, srow, erow, false, new_lines)
+  nio.api.nvim_buf_set_lines(buf, srow, erow, false, new_lines)
   if old_indent then
     vim.cmd(('silent %d,%dleft'):format(srow + 1, erow))
   end
