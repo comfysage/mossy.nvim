@@ -1,9 +1,8 @@
-local nio = require 'nio'
+local nio = require("nio")
 
-local log = require 'mossy.log'
-local utils = require 'mossy.utils'
-local ft = require 'mossy.filetype'
-local config = require 'mossy.config'
+local config = require("mossy.config")
+local log = require("mossy.log")
+local utils = require("mossy.utils")
 
 ---@private
 ---@param formatter mossy.source.formatting
@@ -30,7 +29,7 @@ local function do_pure_fmt(buf, range, formatter)
     erow = range.rend[1]
   end
   local prev_lines = vim.api.nvim_buf_get_lines(buf, srow, erow, false)
-  local prev_lines_str = table.concat(prev_lines, '\n')
+  local prev_lines_str = table.concat(prev_lines, "\n")
   local errno = nil
   local new_lines = nil
 
@@ -40,17 +39,13 @@ local function do_pure_fmt(buf, range, formatter)
   if formatter.fn then
     new_lines = formatter.fn({ buf = buf, range = range })
   else
-    local result, err = utils.spawn(
-      utils.get_cmd(formatter, { buf = buf, range = range }),
-      nil,
-      formatter,
-      prev_lines_str
-    )
+    local result, err =
+      utils.spawn(utils.get_cmd(formatter, { buf = buf, range = range }), nil, formatter, prev_lines_str)
     if err then
       -- indicates error
       errno = {}
       errno.code = result.pid
-      errno.reason = formatter.cmd .. ' exited with errors'
+      errno.reason = formatter.cmd .. " exited with errors"
       errno.cmd = formatter.cmd
       errno.stderr = err
       return errno
@@ -67,29 +62,25 @@ local function do_pure_fmt(buf, range, formatter)
   end
 
   if not new_lines then
-    return 'no newlines returned'
+    return "no newlines returned"
   end
 
   log.trace("got newlines")
 
   -- check if we are in a valid state
   if nio.api.nvim_buf_get_changedtick(buf) ~= changedtick then
-    return 'buffer changed'
+    return "buffer changed"
   end
 
   if not nio.api.nvim_buf_is_valid(buf) then
-    return 'buffer no longer valid'
+    return "buffer no longer valid"
   end
 
   errno = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
 
   if errno then
     if errno.cmd and errno.code and errno.stderr then
-      errno = ('%s exited with code %d\n%s'):format(
-        errno.cmd,
-        errno.code,
-        errno.stderr
-      )
+      errno = ("%s exited with code %d\n%s"):format(errno.cmd, errno.code, errno.stderr)
     elseif errno.reason then
       errno = errno.reason
     end
@@ -102,13 +93,12 @@ end
 ---@param formatter mossy.source.formatting
 ---@return true|any
 local function do_impure_fmt(buf, formatter)
-  local opts =
-    vim.tbl_extend('force', utils.get_cmd(formatter, { buf = buf }), {
-      env = formatter.env or {},
-    })
+  local opts = vim.tbl_extend("force", utils.get_cmd(formatter, { buf = buf }), {
+    env = formatter.env or {},
+  })
   if not opts.cmd then
     vim.print(formatter)
-    return error 'formatter is missing a cmd field'
+    return error("formatter is missing a cmd field")
   end
   local result, err = nio.process.run(opts)
 
@@ -116,7 +106,7 @@ local function do_impure_fmt(buf, formatter)
   if err then
     errno = {}
     errno.code = result.pid
-    errno.reason = formatter.cmd .. ' exited with errors'
+    errno.reason = formatter.cmd .. " exited with errors"
     errno.cmd = formatter.cmd
     errno.stderr = err
     return err
@@ -125,7 +115,7 @@ local function do_impure_fmt(buf, formatter)
   vim.schedule(function()
     vim.api.nvim_buf_call(buf, function()
       local views = utils.save_views(buf)
-      vim.api.nvim_command 'silent! edit!'
+      vim.api.nvim_command("silent! edit!")
       utils.restore_views(views)
     end)
   end)
@@ -137,97 +127,66 @@ end
 ---@param props mossy.format.props
 ---@return true|any
 function format.request(buf, range, formatter, props)
-  local format_on_save = fmt_get_option(formatter, 'format_on_save')
+  local format_on_save = fmt_get_option(formatter, "format_on_save")
   if format_on_save == nil then
     format_on_save = config.get().defaults.formatting.format_on_save
   end
   if props.autoformat and not format_on_save then
-    return log.trace(('(%s) autoformat disabled'):format(formatter.name))
+    return log.trace(("(%s) autoformat disabled"):format(formatter.name))
   end
 
   if range and not formatter.stdin then
-    return log.warn(
-      ('(%s) formatter cannot format range'):format(formatter.name)
-    )
+    return log.warn(("(%s) formatter cannot format range"):format(formatter.name))
   end
 
-  if formatter.cond and not formatter.cond { buf = buf, range = range } then
-    return log.trace(('(%s) disabled by condition'):format(formatter.name))
-  end
+  log.debug(("(%s) pending format"):format(formatter.name))
 
-  if formatter.cmd and vim.fn.executable(formatter.cmd) == 0 then
-    return log.warn(
-      ('(%s) executable not found `%s`'):format(formatter.name, formatter.cmd)
-    )
-  end
-
-  log.debug(('(%s) pending format'):format(formatter.name))
-
-  local result = nil
+  local result = nio.control.future()
   nio.run(function()
+    local err
     if formatter.stdin or formatter.fn then
-      log.debug(('(%s) using pure formatting'):format(formatter.name))
-      result = do_pure_fmt(buf, range, formatter)
+      log.debug(("(%s) using pure formatting"):format(formatter.name))
+      err = do_pure_fmt(buf, range, formatter)
     else
-      log.debug(('(%s) using impure formatting'):format(formatter.name))
-      result = do_impure_fmt(buf, formatter)
+      log.debug(("(%s) using impure formatting"):format(formatter.name))
+      err = do_impure_fmt(buf, formatter)
     end
+    result.set(err)
   end)
 
-  if result and result ~= true then
-    return log.error(result)
+  local ok, err = pcall(result.wait)
+  if ok and err ~= true then
+    return log.error(err)
   end
 
-  log.debug(('(%s) finished formatting'):format(formatter.name))
-
-  return true
-end
-
----@param buf integer
----@param range? mossy.utils.range
----@param props mossy.format.props
-function format.lsp_format(buf, range, props)
-  local formatter = require('mossy.builtins').get 'lsp'
-  if not formatter then
-    return log.debug 'lsp builtin formatter could not be found'
-  end
-  ---@cast formatter mossy.source.formatting
-
-  return format.request(buf, range, formatter, props)
+  log.debug(("(%s) finished formatting"):format(formatter.name))
 end
 
 ---@param buf integer
 ---@param props mossy.format.props
 function format.try(buf, props)
-  local filetype = vim.filetype.match { buf = buf }
-  if not filetype then
-    log.warn 'unable to detect filetype'
-    return
-  end
-  local formatters = ft.get(filetype, 'formatting')
+  local formatters = require("mossy").get(buf)
   if #formatters == 0 then
-    local msg = ("no formatters configured for filetype '%s'"):format(filetype)
-    return log.warn(msg)
+    local use_lsp_fallback = require("mossy.config").get().defaults.formatting.use_lsp_fallback
+    if use_lsp_fallback then
+      local formatter = require("mossy.builtins").get("lsp")
+      if not formatter then
+        return log.debug("lsp builtin formatter could not be found")
+      end
+      formatters = { formatter }
+    else
+      return log.debug("no matching formatters configured")
+    end
   end
 
   local range = nil
   local mode = vim.api.nvim_get_mode().mode
-  if mode == 'V' or mode == 'v' then
-    range = utils.range_from_selection(buf, mode == 'V')
+  if mode == "V" or mode == "v" then
+    range = utils.range_from_selection(buf, mode == "V")
   end
 
-  vim.iter(ipairs(formatters)):find(function(_, formatter)
-    local result = format.request(buf, range, formatter, props)
-    if result and result ~= true then
-      log.debug(('error while formatting\n\t%s'):format(result))
-      local use_lsp_fallback = fmt_get_option(formatter, 'use_lsp_fallback')
-      if use_lsp_fallback then
-        result = format.lsp_format(buf, range, props)
-        if result and result ~= true then
-          log.debug(('error while formatting\n\t%s'):format(result))
-        end
-      end
-    end
+  vim.iter(ipairs(formatters)):each(function(_, formatter)
+    format.request(buf, range, formatter, props)
   end)
 end
 

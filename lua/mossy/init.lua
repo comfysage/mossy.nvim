@@ -76,7 +76,7 @@
 --- }
 --- ```
 
-local config = require 'mossy.config'
+local config = require("mossy.config")
 
 local mossy = {}
 
@@ -86,30 +86,26 @@ function mossy.setup(cfg)
   config.set(config.override(cfg))
 end
 
----@param buf? integer
-function mossy.init(buf)
-  buf = buf or 0
-
-  vim.api.nvim_create_autocmd('BufWritePre', {
-    group = vim.api.nvim_create_augroup(
-      ('mossy.format[%d]'):format(buf),
-      { clear = true }
-    ),
+function mossy.init()
+  vim.api.nvim_create_autocmd("BufWritePre", {
+    group = vim.api.nvim_create_augroup("mossy.autoformat", { clear = true }),
     callback = function(ev)
-      if require('mossy.config').get().enable then
-        require('mossy').format(ev.buf, { autoformat = true })
+      if vim.bo[ev.buf].buftype ~= '' then
+        return
+      end
+      if require("mossy.config").get().enable then
+        require("mossy").format(ev.buf, { autoformat = true })
       end
     end,
-    buffer = buf,
   })
 end
 
 function mossy.disable()
-  config.set(vim.tbl_deep_extend('force', config.get(), { enable = false }))
+  config.set(vim.tbl_deep_extend("force", config.get(), { enable = false }))
 end
 
 function mossy.enable()
-  config.set(vim.tbl_deep_extend('force', config.get(), { enable = true }))
+  config.set(vim.tbl_deep_extend("force", config.get(), { enable = true }))
 end
 
 function mossy.toggle()
@@ -127,7 +123,34 @@ end
 ---@param props? mossy.format.props
 function mossy.format(buf, props)
   buf = buf or 0
-  return require('mossy.format').try(buf, props or {})
+  return require("mossy.format").try(buf, props or {})
+end
+
+---@param buf? integer
+---@return mossy.source.formatting[]
+function mossy.get(buf)
+  buf = buf or 0
+  local filetype = vim.bo.filetype
+  if not filetype then
+    return {}
+  end
+
+  local formatters = require("mossy.filetype").get(filetype, "formatting")
+  return vim
+    .iter(formatters)
+    :filter(function(formatter)
+      if formatter.cond and not formatter.cond({ buf = buf }) then
+        require("mossy.log").trace(("(%s) disabled by condition"):format(formatter.name))
+        return false
+      end
+
+      if formatter.cmd and vim.fn.executable(formatter.cmd) == 0 then
+        require("mossy.log").debug(("(%s) executable not found `%s`"):format(formatter.name, formatter.cmd))
+        return false
+      end
+      return true
+    end)
+    :totable()
 end
 
 return mossy
