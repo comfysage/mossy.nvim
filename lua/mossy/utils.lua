@@ -1,47 +1,37 @@
-local nio = require 'nio'
+local nio = require("nio")
 
-local log = require 'mossy.log'
+local log = require("mossy.log")
 
 local utils = {}
 
 ---@param method mossy.method
 ---@return boolean
 function utils.is_valid_method(method)
-  return (method == 'diagnostics' or method == 'formatting')
+  return (method == "diagnostics" or method == "formatting")
 end
 
 ---@param cfg mossy.source|string
 ---@return mossy.source|any
 function utils.parsecfg(cfg)
-  if type(cfg) == 'string' then
-    local source = require('mossy.builtins').get(cfg)
+  if type(cfg) == "string" then
+    local source = require("mossy.builtins").get(cfg)
     if not source then
       return log.error(string.format("could not find builtin: '%s'", cfg))
     end
 
     return source
   end
-  if type(cfg) ~= 'table' then
-    return log.error 'invalid cfg type: expected table, got: '..type(cfg)
+  if type(cfg) ~= "table" then
+    return log.error("invalid cfg type: expected table, got: ") .. type(cfg)
   end
   if not cfg.name then
-    return log.error 'source has no name'
+    return log.error("source has no name")
   end
   if not cfg.method or not utils.is_valid_method(cfg.method) then
-    return log.error(
-      ("(%s) method of source is not valid, got '%s'"):format(
-        cfg.name,
-        cfg.method
-      )
-    )
+    return log.error(("(%s) method of source is not valid, got '%s'"):format(cfg.name, cfg.method))
   end
   if not (cfg.cmd or cfg.fn) then
-    return log.error(
-      string.format(
-        '(%s) source needs a `cmd` or `fn` field but got none',
-        cfg.name
-      )
-    )
+    return log.error(string.format("(%s) source needs a `cmd` or `fn` field but got none", cfg.name))
   end
   if cfg.cmd then
     if not cfg.args then
@@ -53,12 +43,7 @@ function utils.parsecfg(cfg)
   else
     -- source is a function
     if cfg.args or cfg.stdin then
-      return log.error(
-        string.format(
-          '(%s) source is a function but has command fields',
-          cfg.name
-        )
-      )
+      return log.error(string.format("(%s) source is a function but has command fields", cfg.name))
     end
   end
   return cfg
@@ -70,8 +55,8 @@ end
 ---@param lineselect boolean
 ---@return mossy.utils.range
 function utils.range_from_selection(buf, lineselect)
-  local rstart = vim.fn.getpos 'v'
-  local rend = vim.fn.getpos '.'
+  local rstart = vim.fn.getpos("v")
+  local rend = vim.fn.getpos(".")
   local start_row = rstart[2]
   local start_col = rstart[3]
   local end_row = rend[2]
@@ -123,14 +108,14 @@ end
 ---@return string?
 function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
   if not new_lines or #new_lines == 0 then
-    return 'no new lines'
+    return "no new lines"
   end
 
   -- \r\n for windows compatibility
   ---@diagnostic disable-next-line: cast-local-type
-  new_lines = vim.split(new_lines, '\r?\n')
+  new_lines = vim.split(new_lines, "\r?\n")
 
-  if new_lines[#new_lines] == '' then
+  if new_lines[#new_lines] == "" then
     new_lines[#new_lines] = nil
   end
 
@@ -141,16 +126,16 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
   local views = utils.save_views(buf)
   ---@type number?
   local old_indent
-  if nio.api.nvim_get_mode().mode == 'V' then
+  if nio.api.nvim_get_mode().mode == "V" then
     old_indent = vim.fn.indent(srow + 1)
   end
   nio.api.nvim_buf_set_lines(buf, srow, erow, false, new_lines)
   if old_indent then
-    vim.cmd(('silent %d,%dleft'):format(srow + 1, erow))
+    vim.cmd(("silent %d,%dleft"):format(srow + 1, erow))
   end
   utils.restore_views(views)
 
-  log.debug 'finished updating buffer'
+  log.debug("finished updating buffer")
 end
 
 ---@param config mossy.source.formatting
@@ -158,7 +143,7 @@ end
 function utils.get_cmd(config, params)
   local v = { cmd = config.cmd }
   local args = config.args or {}
-  if type(args) == 'function' then
+  if type(args) == "function" then
     args = args(params)
   end
   v.args = args
