@@ -159,24 +159,8 @@ function utils.get_cmd(config, params)
     args = args(params)
   end
   v.args = args
+  v.env = config.env
   return v
-end
-
----@param cmd { cmd: string, args: string[] }
----@param cwd? string
----@param config mossy.source.formatting
----@param lines string|string[]
----@return nio.process.handle
----@return string?
-function utils.spawn(cmd, cwd, config, lines)
-  local handle, err = nio.process.run(vim.tbl_extend('force', cmd, {
-    cwd = cwd,
-    env = config.env,
-  }))
-  -- write to stdin and close it
-  handle.stdin.write(lines)
-  handle.stdin.close()
-  return handle, err
 end
 
 return utils

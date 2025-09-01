@@ -33,20 +33,29 @@ local function do_pure_fmt(buf, range, formatter)
   local new_lines = nil
 
   -- NOTE: defer initialization, since BufWritePre would trigger a tick change
-  local changedtick = nio.api.nvim_buf_get_changedtick(buf)
+  local changedtick = nil
+  vim.schedule(function()
+    changedtick = nio.api.nvim_buf_get_changedtick(buf)
+  end)
 
   if formatter.fn then
     new_lines = formatter.fn({ buf = buf, range = range })
   else
-    local result, err =
-      utils.spawn(utils.get_cmd(formatter, { buf = buf, range = range }), nil, formatter, prev_lines_str)
-    if err then
-      return ("%s exited with code %d\n%s"):format(formatter.cmd, result.pid, err)
+    local props = utils.get_cmd(formatter, { buf = buf, range = range })
+    if not props.cmd then
+      return "formatter is missing a cmd field"
     end
 
-    new_lines = result.stdout.read()
-    if formatter.on_output then
-      new_lines = formatter.on_output(new_lines)
+    local handle, err = nio.process.run(props)
+
+    -- write to stdin and close it
+    handle.stdin.write(prev_lines_str)
+    handle.stdin.close()
+
+    new_lines = handle.stdout.read()
+
+    if err then
+      return ("%s exited with code %d\n%s"):format(formatter.cmd, handle.pid, err)
     end
   end
 
@@ -54,25 +63,25 @@ local function do_pure_fmt(buf, range, formatter)
     return "no newlines returned"
   end
 
-  log.trace("received newlines")
-
-  -- check if we are in a valid state
-  if nio.api.nvim_buf_get_changedtick(buf) ~= changedtick then
-    return "buffer changed"
+  if formatter.on_output then
+    new_lines = formatter.on_output(new_lines)
   end
+
+  log.trace("received newlines")
 
   if not nio.api.nvim_buf_is_valid(buf) then
     return "buffer no longer valid"
   end
 
-  errno = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
+  -- check if we are in a valid state
+  local newtick = nio.api.nvim_buf_get_changedtick(buf)
+  if newtick ~= changedtick then
+    return string.format("buffer changed: %d -> %d", changedtick, newtick)
+  end
 
-  if errno then
-    if errno.cmd and errno.code and errno.stderr then
-      errno = ("%s exited with code %d\n%s"):format(errno.cmd, errno.code, errno.stderr)
-    elseif errno.reason then
-      errno = errno.reason
-    end
+  local err = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
+  if err then
+    return "error while updating buffer: " .. err
   end
 end
 
@@ -80,11 +89,8 @@ end
 ---@param formatter mossy.source.formatting
 ---@return string? err
 local function do_impure_fmt(buf, formatter)
-  local opts = vim.tbl_extend("force", utils.get_cmd(formatter, { buf = buf }), {
-    env = formatter.env or {},
-  })
+  local opts = utils.get_cmd(formatter, { buf = buf })
   if not opts.cmd then
-    vim.print(formatter)
     return "formatter is missing a cmd field"
   end
 
@@ -122,7 +128,6 @@ function format.request(buf, range, formatter, props)
 
   log.debug(("(%s) pending format"):format(formatter.name))
 
-  local result = nio.control.future()
   nio.run(function()
     local err
     if formatter.stdin or formatter.fn then
@@ -132,13 +137,12 @@ function format.request(buf, range, formatter, props)
       log.debug(("(%s) using impure formatting"):format(formatter.name))
       err = do_impure_fmt(buf, formatter)
     end
-    result.set(err)
+    assert(not err, err)
+  end, function(ok, err)
+    if not ok and err then
+      return log.error(string.format("(%s) error encountered while formatting:\n\t%s", formatter.name, err))
+    end
   end)
-
-  local ok, err = pcall(result.wait)
-  if not ok or err then
-    return log.error(err)
-  end
 
   log.debug(("(%s) finished formatting"):format(formatter.name))
 end
@@ -172,3 +176,4 @@ function format.try(buf, props)
 end
 
 return format
+
