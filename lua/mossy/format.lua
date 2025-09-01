@@ -33,6 +33,8 @@ local function do_pure_fmt(buf, range, formatter)
   local prev_lines_str = table.concat(prev_lines, "\n")
   local new_lines = nil
 
+  log.trace("saved prevlines")
+
   -- NOTE: defer initialization, since BufWritePre would trigger a tick change
   local changedtick = nil
   vim.schedule(function()
@@ -40,8 +42,10 @@ local function do_pure_fmt(buf, range, formatter)
   end)
 
   if formatter.fn then
+    log.trace("run formatting fn")
     new_lines = formatter.fn({ buf = buf, range = range })
   else
+    log.trace("run formatting cmd")
     local props = utils.get_cmd(formatter, { buf = buf, range = range })
     if not props.cmd then
       return "formatter is missing a cmd field"
@@ -73,6 +77,8 @@ local function do_pure_fmt(buf, range, formatter)
   if not nio.api.nvim_buf_is_valid(buf) then
     return "buffer no longer valid"
   end
+
+  log.trace(string.format("update buffer: %d", buf))
 
   -- check if we are in a valid state
   local newtick = nio.api.nvim_buf_get_changedtick(buf)
@@ -119,7 +125,7 @@ function format.request(buf, range, formatter, props)
     format_on_save = config.get().defaults.formatting.format_on_save
   end
   if props.autoformat and not format_on_save then
-    return log.trace(("(%s) autoformat disabled"):format(formatter.name))
+    return log.debug(("(%s) autoformat disabled"):format(formatter.name))
   end
 
   if range and not formatter.stdin then
@@ -142,9 +148,9 @@ function format.request(buf, range, formatter, props)
     if not ok and err then
       return log.error(string.format("(%s) error encountered while formatting:\n\t%s", formatter.name, err))
     end
-  end)
 
-  log.debug(("(%s) finished formatting"):format(formatter.name))
+    log.debug(("(%s) finished formatting"):format(formatter.name))
+  end)
 end
 
 ---@param buf integer
@@ -176,4 +182,3 @@ function format.try(buf, props)
 end
 
 return format
-
