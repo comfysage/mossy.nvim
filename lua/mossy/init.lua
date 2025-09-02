@@ -90,7 +90,7 @@ function mossy.init()
   vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("mossy.autoformat", { clear = true }),
     callback = function(ev)
-      if vim.bo[ev.buf].buftype ~= '' then
+      if vim.bo[ev.buf].buftype ~= "" then
         return
       end
       if require("mossy.config").get().enable then
@@ -135,10 +135,20 @@ function mossy.get(buf)
     return {}
   end
 
+  if not vim.bo[buf].modifiable then
+    return {}
+  end
+
+  local allow_all = vim.bo[buf].buftype == "" and (#vim.api.nvim_buf_get_name(buf) ~= 0)
+
   local formatters = require("mossy.filetype").get(filetype, "formatting")
   return vim
     .iter(formatters)
     :filter(function(formatter)
+      if not allow_all and (formatter.filetypes == nil or vim.tbl_isempty(formatter.filetypes)) then
+        return false
+      end
+
       if formatter.cond and not formatter.cond({ buf = buf }) then
         require("mossy.log").trace(("(%s) disabled by condition"):format(formatter.name))
         return false
