@@ -5,7 +5,7 @@ local log = require("mossy.log")
 local utils = require("mossy.utils")
 
 ---@private
----@param formatter mossy.source.formatting
+---@param formatter mossy.source
 ---@param arg1 string
 ---@param ... string
 local function fmt_get_option(formatter, arg1, ...)
@@ -13,7 +13,7 @@ local function fmt_get_option(formatter, arg1, ...)
   if formatter.config and v then
     return v
   end
-  return vim.tbl_get(config.get().defaults.formatting, arg1, ...)
+  return vim.tbl_get(config.get().defaults, arg1, ...)
 end
 
 local format = {}
@@ -21,7 +21,7 @@ local format = {}
 ---@async
 ---@param buf integer
 ---@param range? mossy.utils.range
----@param formatter mossy.source.formatting
+---@param formatter mossy.source
 ---@return string? err
 local function do_pure_fmt(buf, range, formatter)
   local srow, erow = 0, -1
@@ -44,6 +44,13 @@ local function do_pure_fmt(buf, range, formatter)
   if formatter.fn then
     log.trace("run formatting fn")
     new_lines = formatter.fn({ buf = buf, range = range })
+    if type(new_lines) == "boolean" then
+      if new_lines then
+        log.debug("assuming fn formatted file")
+        return
+      end
+      new_lines = nil
+    end
   else
     log.trace("run formatting cmd")
     local props = utils.get_cmd(formatter, { buf = buf, range = range })
@@ -94,7 +101,7 @@ end
 
 ---@async
 ---@param buf integer
----@param formatter mossy.source.formatting
+---@param formatter mossy.source
 ---@return string? err
 local function do_impure_fmt(buf, formatter)
   local opts = utils.get_cmd(formatter, { buf = buf })
@@ -116,13 +123,13 @@ end
 
 ---@param buf integer
 ---@param range? mossy.utils.range
----@param formatter mossy.source.formatting
+---@param formatter mossy.source
 ---@param props mossy.format.props
 ---@return true|any
 function format.request(buf, range, formatter, props)
   local format_on_save = fmt_get_option(formatter, "format_on_save")
   if format_on_save == nil then
-    format_on_save = config.get().defaults.formatting.format_on_save
+    format_on_save = config.get().defaults.format_on_save
   end
   if props.autoformat and not format_on_save then
     return log.debug(("(%s) autoformat disabled"):format(formatter.name))
@@ -149,7 +156,7 @@ function format.request(buf, range, formatter, props)
       return log.error(string.format("(%s) error encountered while formatting:\n\t%s", formatter.name, err))
     end
 
-    log.debug(("(%s) finished formatting"):format(formatter.name))
+    log.debug(("(%s) finished"):format(formatter.name))
   end)
 end
 
@@ -158,7 +165,7 @@ end
 function format.try(buf, props)
   local formatters = require("mossy").get(buf)
   if #formatters == 0 then
-    local use_lsp_fallback = require("mossy.config").get().defaults.formatting.use_lsp_fallback
+    local use_lsp_fallback = require("mossy.config").get().defaults.use_lsp_fallback
     if use_lsp_fallback then
       local formatter = require("mossy.builtins").get("lsp")
       if not formatter then

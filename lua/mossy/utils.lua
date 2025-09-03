@@ -4,34 +4,26 @@ local log = require("mossy.log")
 
 local utils = {}
 
----@param method mossy.method
----@return boolean
-function utils.is_valid_method(method)
-  return (method == "diagnostics" or method == "formatting")
-end
-
 ---@param cfg mossy.source|string
----@return mossy.source|any
+---@return mossy.source|any?
+---@return any? err
 function utils.parsecfg(cfg)
   if type(cfg) == "string" then
     local source = require("mossy.builtins").get(cfg)
     if not source then
-      return log.error(string.format("could not find builtin: '%s'", cfg))
+      return nil, log.error(string.format("could not find builtin: '%s'", cfg))
     end
 
     return source
   end
   if type(cfg) ~= "table" then
-    return log.error("invalid cfg type: expected table, got: ") .. type(cfg)
+    return nil, log.error("invalid cfg type: expected table, got: ") .. type(cfg)
   end
   if not cfg.name then
-    return log.error("source has no name")
-  end
-  if not cfg.method or not utils.is_valid_method(cfg.method) then
-    return log.error(("(%s) method of source is not valid, got '%s'"):format(cfg.name, cfg.method))
+    return nil, log.error("source has no name")
   end
   if not (cfg.cmd or cfg.fn) then
-    return log.error(string.format("(%s) source needs a `cmd` or `fn` field but got none", cfg.name))
+    return nil, log.error(string.format("(%s) source needs a `cmd` or `fn` field but got none", cfg.name))
   end
   if cfg.cmd then
     if not cfg.args then
@@ -43,7 +35,7 @@ function utils.parsecfg(cfg)
   else
     -- source is a function
     if cfg.args or cfg.stdin then
-      return log.error(string.format("(%s) source is a function but has command fields", cfg.name))
+      return nil, log.error(string.format("(%s) source is a function but has command fields", cfg.name))
     end
   end
   return cfg
@@ -138,8 +130,8 @@ function utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
   log.debug("finished updating buffer")
 end
 
----@param config mossy.source.formatting
----@param params mossy.formatting.params
+---@param config mossy.source
+---@param params mossy.callback.params
 function utils.get_cmd(config, params)
   local v = { cmd = config.cmd }
   local args = config.args or {}

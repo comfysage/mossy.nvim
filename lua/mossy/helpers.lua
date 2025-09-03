@@ -13,7 +13,7 @@ local h = {}
 ---@param opts mossy.helpers.make_args_range.keyset
 ---@return function
 function h.make_args_range(args, start_arg, end_arg, opts)
-  ---@param params mossy.formatting.params
+  ---@param params mossy.callback.params
   return function(params)
     if not params.range then
       return args

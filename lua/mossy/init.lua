@@ -66,11 +66,8 @@
 --- {
 --- 	enable = true,
 --- 	defaults = {
---- 		formatting = {
---- 			format_on_save = true,
---- 			use_lsp_fallback = true,
---- 		},
---- 		diagnostics = {},
+--- 		format_on_save = true,
+--- 		use_lsp_fallback = true,
 --- 	},
 --- 	log_level = vim.log.levels.INFO,
 --- }
@@ -127,7 +124,7 @@ function mossy.format(buf, props)
 end
 
 ---@param buf? integer
----@return mossy.source.formatting[]
+---@return mossy.source[]
 function mossy.get(buf)
   buf = buf or 0
   local filetype = vim.bo.filetype
@@ -141,7 +138,7 @@ function mossy.get(buf)
 
   local allow_all = vim.bo[buf].buftype == "" and (#vim.api.nvim_buf_get_name(buf) ~= 0)
 
-  local formatters = require("mossy.filetype").get(filetype, "formatting")
+  local formatters = require("mossy.filetype").get(filetype)
   return vim
     .iter(formatters)
     :filter(function(formatter)

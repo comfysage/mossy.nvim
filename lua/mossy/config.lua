@@ -4,17 +4,10 @@ local config = {}
 config.default = {
   enable = true,
   defaults = {
-    formatting = {
-      format_on_save = true,
-      use_lsp_fallback = true,
-    },
-    diagnostics = {},
+    format_on_save = true,
+    use_lsp_fallback = true,
   },
-  sources = {
-    diagnostics = {},
-    formatting = {},
-  },
-  per_filetype = {},
+  sources = {},
   log_level = vim.log.levels.INFO,
 }
 
@@ -23,13 +16,13 @@ config.current = {}
 
 ---@return mossy.config
 function config.get()
-  return vim.tbl_deep_extend('force', config.default, config.current)
+  return vim.tbl_deep_extend("force", config.default, config.current)
 end
 
 ---@param cfg mossy.config
 ---@return mossy.config
 function config.override(cfg)
-  return vim.tbl_deep_extend('force', config.default, cfg)
+  return vim.tbl_deep_extend("force", config.default, cfg)
 end
 
 ---@param cfg mossy.config
