@@ -1,0 +1,56 @@
+                                                        *mossy.utils.parsecfg()*
+                         `mossy.utils.parsecfg`({cfg})
+Parameters ~
+{cfg} `(mossy.source|string)`
+Return ~
+`(mossy.source|any)` `(optional)`
+Return ~
+`(any)` `(optional)` err
+
+------------------------------------------------------------------------------
+                                            *mossy.utils.range_from_selection()*
+            `mossy.utils.range_from_selection`({buf}, {lineselect})
+Parameters ~
+{buf} `(integer)`
+{lineselect} `(boolean)`
+Return ~
+`(mossy.mossy.utils.range)`
+
+------------------------------------------------------------------------------
+                                                      *mossy.utils.save_views()*
+                        `mossy.utils.save_views`({buf})
+
+Parameters ~
+{buf} `(integer)`
+Return ~
+`({ [integer]: table })`
+
+------------------------------------------------------------------------------
+                                                   *mossy.utils.restore_views()*
+                      `mossy.utils.restore_views`({views})
+
+Parameters ~
+{views} `({ [integer]: table })`
+
+------------------------------------------------------------------------------
+                                                   *mossy.utils.update_buffer()*
+ `mossy.utils.update_buffer`({buf}, {prev_lines}, {new_lines}, {srow}, {erow})
+
+Parameters ~
+{buf} `(integer)`
+{prev_lines} `(string[])`
+{new_lines} `(string)`
+{srow} `(integer)`
+{erow} `(integer)`
+Return ~
+`(string)` `(optional)`
+
+------------------------------------------------------------------------------
+                                                         *mossy.utils.get_cmd()*
+                   `mossy.utils.get_cmd`({config}, {params})
+Parameters ~
+{config} `(mossy.source)`
+{params} `(mossy.callback.params)`
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

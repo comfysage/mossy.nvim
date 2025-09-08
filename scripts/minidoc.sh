@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-
-nvim --headless "$@" -c 'luafile minidoc.lua' +"quit"
+rm -r doc
+nvim --headless "$@" -l minidoc.lua

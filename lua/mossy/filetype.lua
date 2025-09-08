@@ -1,16 +1,16 @@
-local ft = {}
+local filetype = {}
 
----@param filetype string
+---@param ft string
 ---@return mossy.source[]
-function ft.get(filetype)
+function filetype.get(ft)
   return vim
     .iter(pairs(require("mossy.config").get().sources))
     :map(function(_, cfg)
-      if not cfg.filetypes or vim.tbl_contains(cfg.filetypes, filetype) then
+      if not cfg.filetypes or vim.tbl_contains(cfg.filetypes, ft) then
         return cfg
       end
     end)
     :totable()
 end
 
-return ft
+return filetype

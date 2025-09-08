@@ -1,0 +1,55 @@
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{__index} `(mossy.proto.mossy.sources)`
+{value} `(mossy.config.mossy.sources)`
+{lastsource} `(optional)` `(string)`
+
+------------------------------------------------------------------------------
+                                                                 *mossy.sources*
+                                `mossy.sources`
+Type ~
+`(mossy.proto.mossy.sources)`
+
+------------------------------------------------------------------------------
+                                                           *mossy.sources:get()*
+                             `mossy.sources:get`()
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{get} `(fun(): mossy.config.mossy.sources)`
+
+------------------------------------------------------------------------------
+                                                          *mossy.sources:push()*
+                             `mossy.sources:push`()
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{push} `(fun(): mossy.proto.mossy.sources)`
+
+------------------------------------------------------------------------------
+                                                           *mossy.sources:add()*
+                           `mossy.sources:add`({cfg})
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{add} `(fun(self, cfg: mossy.source|string): mossy.proto.mossy.sources)`
+
+------------------------------------------------------------------------------
+                                                          *mossy.sources:with()*
+                          `mossy.sources:with`({cfg})
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{with} `(fun(self, cfg: mossy.source): mossy.proto.mossy.sources)`
+
+------------------------------------------------------------------------------
+                                                         *mossy.sources:setup()*
+                          `mossy.sources:setup`({src})
+Class ~
+{mossy.proto.mossy.sources}
+Fields ~
+{setup} `(fun(self, src: mossy.source|string[]))`
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

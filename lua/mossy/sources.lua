@@ -9,12 +9,12 @@ local utils = require("mossy.utils")
 
 ---@type mossy.proto.sources
 ---@diagnostic disable-next-line: missing-fields
-local tbl = {}
-tbl.__index = tbl
+local sources = {}
+sources.__index = sources
 
 ---@class mossy.proto.sources
 ---@field get fun(): mossy.config.sources
-function tbl:get()
+function sources:get()
   if not self.value then
     self.value = {}
   end
@@ -23,7 +23,7 @@ end
 
 ---@class mossy.proto.sources
 ---@field push fun(): mossy.proto.sources
-function tbl:push()
+function sources:push()
   config.set(config.override({
     sources = vim.tbl_extend("force", config.get().sources, self:get()),
   }))
@@ -32,7 +32,7 @@ end
 
 ---@class mossy.proto.sources
 ---@field add fun(self, cfg: mossy.source|string): mossy.proto.sources
-function tbl:add(cfg)
+function sources:add(cfg)
   local vcfg, err = utils.parsecfg(cfg)
   if err then
     return
@@ -48,7 +48,7 @@ end
 
 ---@class mossy.proto.sources
 ---@field with fun(self, cfg: mossy.source): mossy.proto.sources
-function tbl:with(cfg)
+function sources:with(cfg)
   if not self.lastsource or not vim.tbl_get(self:get(), self.lastsource) then
     return log.error("no source found to override")
   end
@@ -58,12 +58,12 @@ function tbl:with(cfg)
 end
 
 ---@class mossy.proto.sources
----@field setup fun(self, sources: mossy.source|string[])
-function tbl:setup(sources)
-  vim.iter(ipairs(sources)):each(function(_, cfg)
+---@field setup fun(self, src: mossy.source|string[])
+function sources:setup(src)
+  vim.iter(ipairs(src)):each(function(_, cfg)
     self:add(cfg)
   end)
   return self
 end
 
-return setmetatable({}, tbl)
+return setmetatable({}, sources)

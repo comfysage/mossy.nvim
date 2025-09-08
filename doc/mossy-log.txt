@@ -1,0 +1,39 @@
+                                                            *mossy.log.notify()*
+                           `mossy.log.notify`({item})
+Parameters ~
+{item} `(mossy.logmsg)`
+Return ~
+`(mossy.logmsg)` `(optional)`
+
+------------------------------------------------------------------------------
+                                                             *mossy.log.trace()*
+                            `mossy.log.trace`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                             *mossy.log.debug()*
+                            `mossy.log.debug`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                              *mossy.log.info()*
+                            `mossy.log.info`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                              *mossy.log.warn()*
+                            `mossy.log.warn`({msg})
+Parameters ~
+{msg} `(string)`
+
+------------------------------------------------------------------------------
+                                                             *mossy.log.error()*
+                            `mossy.log.error`({msg})
+Parameters ~
+{msg} `(string)`
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

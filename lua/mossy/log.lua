@@ -14,12 +14,14 @@ local function getdebuginfo()
   return info
 end
 
+---@private
 ---@class mossy.logmsg
 ---@field msg string
 ---@field level integer
 ---@field info string
 local LogMsg = {}
 
+---@private
 ---@param msg string
 ---@param level? integer
 ---@param debuginfo? any

@@ -18,6 +18,7 @@ end
 
 local format = {}
 
+---@private
 ---@async
 ---@param buf integer
 ---@param range? mossy.utils.range
@@ -99,6 +100,7 @@ local function do_pure_fmt(buf, range, formatter)
   end
 end
 
+---@private
 ---@async
 ---@param buf integer
 ---@param formatter mossy.source

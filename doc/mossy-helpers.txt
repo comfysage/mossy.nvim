@@ -1,0 +1,22 @@
+Class ~
+{mossy.mossy.helpers.make_args_range.keyset}
+Fields ~
+{delimiter} `(optional)` `(string)`
+{use_length} `(optional)` `(boolean)`
+{use_rows} `(optional)` `(boolean)`
+{row_offset} `(integer)`
+{col_offset} `(integer)`
+
+------------------------------------------------------------------------------
+                                                           *h.make_args_range()*
+          `h.make_args_range`({args}, {start_arg}, {end_arg}, {opts})
+Parameters ~
+{args} `(string[])`
+{start_arg} `(string)`
+{end_arg} `(string)`
+{opts} `(mossy.mossy.helpers.make_args_range.keyset)`
+Return ~
+`(function)`
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

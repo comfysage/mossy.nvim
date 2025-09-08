@@ -1,3 +1,5 @@
+---@module 'mossy.config'
+
 local config = {}
 
 ---@type mossy.config

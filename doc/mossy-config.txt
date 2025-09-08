@@ -1,0 +1,35 @@
+
+------------------------------------------------------------------------------
+                                                    *mossy.mossy.config.default*
+                          `mossy.mossy.config.default`
+Type ~
+`(mossy.mossy.mossy.config)`
+
+------------------------------------------------------------------------------
+                                                    *mossy.mossy.config.current*
+                          `mossy.mossy.config.current`
+Type ~
+`(mossy.mossy.mossy.config)`
+
+------------------------------------------------------------------------------
+                                                      *mossy.mossy.config.get()*
+                           `mossy.mossy.config.get`()
+Return ~
+`(mossy.mossy.mossy.config)`
+
+------------------------------------------------------------------------------
+                                                 *mossy.mossy.config.override()*
+                      `mossy.mossy.config.override`({cfg})
+Parameters ~
+{cfg} `(mossy.mossy.mossy.config)`
+Return ~
+`(mossy.mossy.mossy.config)`
+
+------------------------------------------------------------------------------
+                                                      *mossy.mossy.config.set()*
+                        `mossy.mossy.config.set`({cfg})
+Parameters ~
+{cfg} `(mossy.mossy.mossy.config)`
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
