@@ -23,7 +23,7 @@ local format = {}
 ---@param buf integer
 ---@param range? mossy.utils.range
 ---@param formatter mossy.source
----@return string? err
+---@return mossy.logmsg?
 local function do_pure_fmt(buf, range, formatter)
   local srow, erow = 0, -1
   if range then
@@ -56,7 +56,7 @@ local function do_pure_fmt(buf, range, formatter)
     log.trace("run formatting cmd")
     local props = utils.get_cmd(formatter, { buf = buf, range = range })
     if not props.cmd then
-      return "formatter is missing a cmd field"
+      return log.error("formatter is missing a cmd field")
     end
 
     local handle, err = nio.process.run(props)
@@ -68,12 +68,12 @@ local function do_pure_fmt(buf, range, formatter)
     new_lines = handle.stdout.read()
 
     if err then
-      return ("%s exited with code %d\n%s"):format(formatter.cmd, handle.pid, err)
+      return log.error(("%s exited with code %d\n%s"):format(formatter.cmd, handle.pid, err))
     end
   end
 
   if not new_lines then
-    return "no newlines returned"
+    return log.warn("no newlines returned")
   end
 
   if formatter.on_output then
@@ -83,7 +83,7 @@ local function do_pure_fmt(buf, range, formatter)
   log.trace("received newlines")
 
   if not nio.api.nvim_buf_is_valid(buf) then
-    return "buffer no longer valid"
+    return log.warn("buffer no longer valid")
   end
 
   log.trace(string.format("update buffer: %d", buf))
@@ -91,12 +91,12 @@ local function do_pure_fmt(buf, range, formatter)
   -- check if we are in a valid state
   local newtick = nio.api.nvim_buf_get_changedtick(buf)
   if newtick ~= changedtick then
-    return string.format("buffer changed: %d -> %d", changedtick, newtick)
+    return log.warn(string.format("buffer changed: %d -> %d", changedtick, newtick))
   end
 
   local err = utils.update_buffer(buf, prev_lines, new_lines, srow, erow)
   if err then
-    return "error while updating buffer: " .. err
+    return log.warn("error while updating buffer: " .. err)
   end
 end
 
@@ -144,15 +144,13 @@ function format.request(buf, range, formatter, props)
   log.debug(("(%s) pending format"):format(formatter.name))
 
   nio.run(function()
-    local err
     if formatter.stdin or formatter.fn then
       log.debug(("(%s) using pure formatting"):format(formatter.name))
-      err = do_pure_fmt(buf, range, formatter)
+      do_pure_fmt(buf, range, formatter)
     else
       log.debug(("(%s) using impure formatting"):format(formatter.name))
-      err = do_impure_fmt(buf, formatter)
+      do_impure_fmt(buf, formatter)
     end
-    assert(not err, err)
   end, function(ok, err)
     if not ok and err then
       return log.error(string.format("(%s) error encountered while formatting:\n\t%s", formatter.name, err))

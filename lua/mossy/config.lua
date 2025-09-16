@@ -10,7 +10,7 @@ config.default = {
     use_lsp_fallback = true,
   },
   sources = {},
-  log_level = vim.log.levels.INFO,
+  log_level = vim.log.levels.ERROR,
 }
 
 ---@type mossy.config

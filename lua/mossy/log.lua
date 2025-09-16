@@ -1,5 +1,6 @@
 local log = {}
 
+-- store option for fast-event context
 log.debugopt = vim.o.debug
 
 local function getdebuginfo()
@@ -57,7 +58,9 @@ function log.notify(item)
   if vim.in_fast_event() then
     require("nio").scheduler()
   end
-  vim.notify(item.msg, item.level)
+  if item.level >= require("mossy.config").get().log_level then
+    vim.notify(item.msg, item.level)
+  end
   return item
 end
 
